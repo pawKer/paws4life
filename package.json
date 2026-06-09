@@ -22,7 +22,7 @@
     "@radix-ui/react-dialog": "^1.1.16",
     "canvas-confetti": "^1.9.4",
     "cheerio": "^1.0.0",
-    "fast-xml-parser": "^4.5.0",
+    "fast-xml-parser": "^5.7.0",
     "lucide-react": "^1.17.0",
     "motion": "^12.18.1",
     "next": "^15.3.3",
