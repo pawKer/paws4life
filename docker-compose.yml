@@ -1,0 +1,51 @@
+services:
+  migrate:
+    build: .
+    command: npm run db:migrate
+    environment:
+      DATABASE_URL: file:/data/app.db
+      SITEMAP_INDEX_URL: ${SITEMAP_INDEX_URL:-https://www.adapostcanincraiova.ro/sitemap_index.xml}
+      SHELTERS_JSON: ${SHELTERS_JSON:-}
+      SYNC_CRON: ${SYNC_CRON:-0 7 * * *}
+      SYNC_TIMEZONE: ${SYNC_TIMEZONE:-Europe/Bucharest}
+    volumes:
+      - paws_data:/data
+
+  web:
+    build: .
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: file:/data/app.db
+      SITEMAP_INDEX_URL: ${SITEMAP_INDEX_URL:-https://www.adapostcanincraiova.ro/sitemap_index.xml}
+      SHELTERS_JSON: ${SHELTERS_JSON:-}
+      SYNC_CRON: ${SYNC_CRON:-0 7 * * *}
+      SYNC_TIMEZONE: ${SYNC_TIMEZONE:-Europe/Bucharest}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    volumes:
+      - paws_data:/data
+
+  sync:
+    build: .
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    command: npm run cron
+    environment:
+      DATABASE_URL: file:/data/app.db
+      SITEMAP_INDEX_URL: ${SITEMAP_INDEX_URL:-https://www.adapostcanincraiova.ro/sitemap_index.xml}
+      SHELTERS_JSON: ${SHELTERS_JSON:-}
+      SYNC_CRON: ${SYNC_CRON:-0 7 * * *}
+      SYNC_TIMEZONE: ${SYNC_TIMEZONE:-Europe/Bucharest}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5-mini}
+      PROFILE_BATCH_SIZE: ${PROFILE_BATCH_SIZE:-50}
+    restart: unless-stopped
+    volumes:
+      - paws_data:/data
+
+volumes:
+  paws_data:

@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Pet {
+  id                 String    @id @default(cuid())
+  shelterId          String
+  shelter            Shelter   @relation(fields: [shelterId], references: [id])
+  sourceUrl          String
+  registryNumber     String
+  title              String?
+  imageUrl           String?
+  captureDate        DateTime?
+  captureDateText    String?
+  captureLocation    String?
+  approximateAge     String?
+  sex                String?
+  size               String?
+  color              String?
+  characteristics    String?
+  profileName        String?
+  profileBio         String?
+  profileGeneratedAt DateTime?
+  profileModel       String?
+  isAvailable        Boolean   @default(true)
+  unavailableSince   DateTime?
+  sourceLastModified DateTime?
+  publishedAt        DateTime?
+  rawFacts           Json?
+  firstSeenAt        DateTime  @default(now())
+  lastSeenAt         DateTime  @default(now())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@unique([shelterId, sourceUrl])
+  @@index([shelterId])
+}
+
+model ScrapeRun {
+  id               String    @id @default(cuid())
+  shelterId        String
+  shelter          Shelter   @relation(fields: [shelterId], references: [id])
+  startedAt        DateTime  @default(now())
+  finishedAt       DateTime?
+  status           String
+  foundCount       Int       @default(0)
+  upsertedCount    Int       @default(0)
+  unavailableCount Int       @default(0)
+  errorMessage     String?
+
+  @@index([shelterId])
+}
+
+model Shelter {
+  id              String      @id @default(cuid())
+  slug            String      @unique
+  name            String
+  sitemapIndexUrl String
+  isActive        Boolean     @default(true)
+  isDefault       Boolean     @default(false)
+  pets            Pet[]
+  scrapeRuns      ScrapeRun[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
