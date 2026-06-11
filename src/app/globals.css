@@ -63,6 +63,20 @@ select {
   }
 }
 
+@keyframes adoption-glow-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 8px 18px hsl(var(--shadow-primary) / 0.14),
+      0 0 0 0 hsl(var(--primary) / 0.22);
+  }
+  50% {
+    box-shadow:
+      0 12px 28px hsl(var(--shadow-primary) / 0.22),
+      0 0 0 5px hsl(var(--accent) / 0.18);
+  }
+}
+
 @keyframes swipe-hint-left {
   0%,
   100% {
@@ -93,7 +107,15 @@ select {
     hsl(var(--primary))
   );
   background-size: 200% 100%;
-  animation: adoption-rainbow-pan 4s linear infinite;
+  animation:
+    adoption-rainbow-pan 4s linear infinite,
+    adoption-glow-pulse 4s ease-in-out infinite;
+}
+
+.adoption-rainbow-glow {
+  animation:
+    adoption-rainbow-pan 4s linear infinite,
+    adoption-glow-pulse 4s ease-in-out infinite;
 }
 
 .swipe-hint-left {
@@ -106,6 +128,7 @@ select {
 
 @media (prefers-reduced-motion: reduce) {
   .adoption-rainbow-border,
+  .adoption-rainbow-glow,
   .swipe-hint-left,
   .swipe-hint-right {
     animation: none;

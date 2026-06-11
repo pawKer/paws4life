@@ -1,6 +1,7 @@
 "use client";
 
 import { useMotionValue } from "motion/react";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import React from "react";
 
@@ -28,12 +29,15 @@ import { cn } from "@/lib/ui/classNames";
 type PetDeckProps = {
   initialPets: PetCard[];
   latestRun: LatestSync;
+  initialView?: BrowseView;
 };
 
-export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
+export function PetDeck({ initialPets, latestRun, initialView }: PetDeckProps) {
+  const pathname = usePathname();
+  const currentView: BrowseView =
+    initialView ?? (pathname === "/gallery" ? "gallery" : "deck");
   const cardDragX = useMotionValue(0);
   const [filters, setFilters] = useState<Filters>(initialFilters);
-  const [currentView, setCurrentView] = useState<BrowseView>("deck");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [matchedPet, setMatchedPet] = useState<PetCard | null>(null);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -63,24 +67,11 @@ export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
   }, [cardDragX, currentPet?.id]);
 
   useEffect(() => {
-    setCurrentView(getInitialView());
-
-    function syncViewFromHistory() {
-      setCurrentView(getInitialView());
-    }
-
-    window.addEventListener("popstate", syncViewFromHistory);
-
-    return () => window.removeEventListener("popstate", syncViewFromHistory);
-  }, []);
-
-  useEffect(() => {
     if (currentView !== "deck" || !showSwipeHints) {
       return;
     }
 
     const hideHints = () => setShowSwipeHints(false);
-    const timeout = window.setTimeout(hideHints, 6500);
     const options = { once: true } as AddEventListenerOptions;
 
     window.addEventListener("pointerdown", hideHints, options);
@@ -89,7 +80,6 @@ export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
     window.addEventListener("touchstart", hideHints, options);
 
     return () => {
-      window.clearTimeout(timeout);
       window.removeEventListener("pointerdown", hideHints);
       window.removeEventListener("keydown", hideHints);
       window.removeEventListener("wheel", hideHints);
@@ -100,25 +90,6 @@ export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
   function updateFilters(nextFilters: Filters) {
     setFilters(nextFilters);
     setCurrentIndex(0);
-  }
-
-  function selectView(view: BrowseView) {
-    setCurrentView(view);
-    setIsMobileMenuOpen(false);
-
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const url = new URL(window.location.href);
-
-    if (view === "gallery") {
-      url.searchParams.set("view", "gallery");
-    } else {
-      url.searchParams.delete("view");
-    }
-
-    window.history.pushState({}, "", `${url.pathname}${url.search}${url.hash}`);
   }
 
   function likeCurrentPet() {
@@ -171,7 +142,6 @@ export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
           isShortlistOpen={isShortlistOpen}
           isMobileMenuOpen={isMobileMenuOpen}
           onToggleFilters={() => setIsFiltersOpen((value) => !value)}
-          onSelectView={selectView}
           onOpenFilters={openFiltersFromMenu}
           onOpenShortlist={openShortlist}
           onToggleMobileMenu={() => setIsMobileMenuOpen((value) => !value)}
@@ -256,14 +226,4 @@ export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
       <MatchDialog pet={matchedPet} onClose={closeMatch} />
     </main>
   );
-}
-
-function getInitialView(): BrowseView {
-  if (typeof window === "undefined") {
-    return "deck";
-  }
-
-  return new URLSearchParams(window.location.search).get("view") === "gallery"
-    ? "gallery"
-    : "deck";
 }

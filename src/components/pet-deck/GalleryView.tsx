@@ -84,28 +84,16 @@ export function GalleryView({
       />
 
       <div className="rounded-lg border border-white/70 bg-card/90 p-4 shadow-[0_24px_70px_hsl(var(--shadow-soft)_/_0.16)] ring-1 ring-border/50 backdrop-blur-sm">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
           <div>
             <h2 className="text-2xl font-black text-foreground">{appCopy.gallery.title}</h2>
             <p className="mt-1 text-sm font-semibold text-muted-foreground">
               {visiblePets.length} {appCopy.gallery.subtitle}
             </p>
           </div>
-          <label className="grid gap-1 text-sm font-black text-foreground sm:w-56">
-            {appCopy.gallery.sortLabel}
-            <Select
-              value={sort}
-              onChange={(event) => setSort(event.target.value as GallerySort)}
-            >
-              <option value="recommended">{appCopy.gallery.recommended}</option>
-              <option value="longestWaiting">{appCopy.gallery.longestWaiting}</option>
-              <option value="newestCapture">{appCopy.gallery.newestCapture}</option>
-              <option value="recentlyAdded">{appCopy.gallery.recentlyAdded}</option>
-            </Select>
-          </label>
         </div>
 
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
           <div
             aria-label={appCopy.gallery.quickFilters}
             className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1"
@@ -131,6 +119,18 @@ export function GalleryView({
               );
             })}
           </div>
+          <label className="grid gap-1 text-sm font-black text-foreground sm:ml-auto sm:w-56">
+            {appCopy.gallery.sortLabel}
+            <Select
+              value={sort}
+              onChange={(event) => setSort(event.target.value as GallerySort)}
+            >
+              <option value="recommended">{appCopy.gallery.recommended}</option>
+              <option value="longestWaiting">{appCopy.gallery.longestWaiting}</option>
+              <option value="newestCapture">{appCopy.gallery.newestCapture}</option>
+              <option value="recentlyAdded">{appCopy.gallery.recentlyAdded}</option>
+            </Select>
+          </label>
         </div>
       </div>
 

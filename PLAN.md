@@ -4,7 +4,7 @@
 Build a coherent v1 that keeps the current swipe deck as the default view, adds a toggleable gallery view, introduces shareable pet detail pages at `/pets/[id]`, and applies a targeted UI refresh inspired by the mockups. Gallery mode will include a “Dog of the day” spotlight, quick filter pills, a compact full-sort/filter control, silent save hearts, and mobile progressive reveal/infinite scroll.
 
 ## Key Changes
-- Keep `/` defaulting to the current deck. Add a view toggle that uses `?view=gallery`; returning to deck clears or sets `?view=deck`.
+- Keep `/` defaulting to the current deck. Add `/gallery` for gallery mode and use path-based navigation between `/` and `/gallery`.
 - Add `/pets/[id]` as the canonical share/detail route for all devices. Gallery cards, dog-of-day “Meet” actions, and share links open this route.
 - Extend the `PetCard` client shape with ISO `captureDate` and likely `firstSeenAt` metadata, without exposing shelter fields or requiring a database migration.
 - Add a shared shortlist hook so deck, gallery, and detail pages use the same localStorage behavior. Gallery/detail hearts silently toggle saved state; deck likes keep the match dialog.

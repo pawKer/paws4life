@@ -1,6 +1,7 @@
 "use client";
 
 import { GalleryHorizontalEnd, Heart, Layers3, Menu, SlidersHorizontal, X } from "lucide-react";
+import Link from "next/link";
 import { useEffect } from "react";
 import React from "react";
 
@@ -16,7 +17,6 @@ type DeckHeaderProps = {
   isShortlistOpen: boolean;
   isMobileMenuOpen: boolean;
   onToggleFilters: () => void;
-  onSelectView: (view: BrowseView) => void;
   onOpenFilters: () => void;
   onOpenShortlist: () => void;
   onToggleMobileMenu: () => void;
@@ -30,7 +30,6 @@ export function DeckHeader({
   isShortlistOpen,
   isMobileMenuOpen,
   onToggleFilters,
-  onSelectView,
   onOpenFilters,
   onOpenShortlist,
   onToggleMobileMenu,
@@ -113,10 +112,9 @@ export function DeckHeader({
               {appCopy.filters.open}
             </Button>
             <div className="flex rounded-lg border border-border bg-card/90 p-1 shadow-sm">
-              <button
-                type="button"
-                aria-pressed={currentView === "deck"}
-                onClick={() => onSelectView("deck")}
+              <Link
+                href="/"
+                aria-current={currentView === "deck" ? "page" : undefined}
                 className={
                   currentView === "deck"
                     ? "inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-black text-primary-foreground shadow-sm"
@@ -125,11 +123,10 @@ export function DeckHeader({
               >
                 <Layers3 className="h-4 w-4" />
                 {appCopy.app.deckView}
-              </button>
-              <button
-                type="button"
-                aria-pressed={currentView === "gallery"}
-                onClick={() => onSelectView("gallery")}
+              </Link>
+              <Link
+                href="/gallery"
+                aria-current={currentView === "gallery" ? "page" : undefined}
                 className={
                   currentView === "gallery"
                     ? "inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-black text-primary-foreground shadow-sm"
@@ -138,7 +135,7 @@ export function DeckHeader({
               >
                 <GalleryHorizontalEnd className="h-4 w-4" />
                 {appCopy.app.galleryView}
-              </button>
+              </Link>
             </div>
             <Button
               variant="primary"
@@ -162,30 +159,24 @@ export function DeckHeader({
 
       {isCompactHeader && isMobileMenuOpen ? (
         <div className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-40 rounded-lg border-2 border-accent bg-popover p-3 shadow-panel">
-          <button
-            type="button"
-            aria-pressed={currentView === "deck"}
-            onClick={() => {
-              onSelectView("deck");
-              onCloseMobileMenu();
-            }}
+          <Link
+            href="/"
+            aria-current={currentView === "deck" ? "page" : undefined}
+            onClick={onCloseMobileMenu}
             className="flex h-12 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-black text-secondary-foreground transition hover:bg-secondary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <Layers3 className="h-5 w-5" />
             <span>{appCopy.app.deckView}</span>
-          </button>
-          <button
-            type="button"
-            aria-pressed={currentView === "gallery"}
-            onClick={() => {
-              onSelectView("gallery");
-              onCloseMobileMenu();
-            }}
+          </Link>
+          <Link
+            href="/gallery"
+            aria-current={currentView === "gallery" ? "page" : undefined}
+            onClick={onCloseMobileMenu}
             className="mt-1 flex h-12 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-black text-secondary-foreground transition hover:bg-secondary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <GalleryHorizontalEnd className="h-5 w-5" />
             <span>{appCopy.app.galleryView}</span>
-          </button>
+          </Link>
           <button
             type="button"
             aria-label={appCopy.filters.open}

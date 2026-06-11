@@ -50,7 +50,7 @@ export function PetDetailView({ pet }: PetDetailViewProps) {
       <div className="relative z-10 mx-auto max-w-5xl px-4 py-4 sm:px-6 sm:py-6">
         <header className="flex items-center justify-between gap-3">
           <Link
-            href="/?view=gallery"
+            href="/gallery"
             className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-card/90 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={appCopy.gallery.detailsBack}
           >

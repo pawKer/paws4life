@@ -1,6 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import { describe, expect, it, beforeEach, vi } from "vitest";
+import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/",
+}));
 
 import { PetDeck } from "@/components/PetDeck";
 import { appCopy } from "@/content/ro";
@@ -52,6 +56,11 @@ describe("PetDeck", () => {
     window.localStorage.clear();
     window.history.pushState({}, "", "/");
     vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("starts with filters minimized and expands them on request", () => {
@@ -130,12 +139,12 @@ describe("PetDeck", () => {
   });
 
   it("shows animated swipe guidance in the deck view only", () => {
-    render(<PetDeck initialPets={pets} latestRun={null} />);
+    const { rerender } = render(<PetDeck initialPets={pets} latestRun={null} initialView="deck" />);
 
     expect(screen.getByText(appCopy.deck.swipeLeft)).toBeInTheDocument();
     expect(screen.getByText(appCopy.deck.swipeRight)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: appCopy.app.galleryView }));
+    rerender(<PetDeck initialPets={pets} latestRun={null} initialView="gallery" />);
 
     expect(screen.queryByText(appCopy.deck.swipeLeft)).not.toBeInTheDocument();
     expect(screen.queryByText(appCopy.deck.swipeRight)).not.toBeInTheDocument();
@@ -161,9 +170,7 @@ describe("PetDeck", () => {
   });
 
   it("opens advanced filters from the header while in gallery view", () => {
-    render(<PetDeck initialPets={pets} latestRun={null} />);
-
-    fireEvent.click(screen.getByRole("button", { name: appCopy.app.galleryView }));
+    render(<PetDeck initialPets={pets} latestRun={null} initialView="gallery" />);
 
     expect(screen.getAllByRole("button", { name: appCopy.filters.open })).toHaveLength(1);
 
@@ -179,6 +186,17 @@ describe("PetDeck", () => {
 
     expect(screen.queryByText(appCopy.deck.swipeLeft)).not.toBeInTheDocument();
     expect(screen.queryByText(appCopy.deck.swipeRight)).not.toBeInTheDocument();
+  });
+
+  it("keeps swipe guidance visible until the user interacts", () => {
+    vi.useFakeTimers();
+
+    render(<PetDeck initialPets={pets} latestRun={null} />);
+
+    vi.advanceTimersByTime(10000);
+
+    expect(screen.getByText(appCopy.deck.swipeLeft)).toBeInTheDocument();
+    expect(screen.getByText(appCopy.deck.swipeRight)).toBeInTheDocument();
   });
 
   it("prefers AI generated profile copy when it is available", () => {
