@@ -1,19 +1,22 @@
 "use client";
 
-import { Heart, Menu, SlidersHorizontal, X } from "lucide-react";
+import { GalleryHorizontalEnd, Heart, Layers3, Menu, SlidersHorizontal, X } from "lucide-react";
 import { useEffect } from "react";
 import React from "react";
 
 import { appCopy } from "@/content/ro";
 import { Button, IconButton } from "@/components/ui/button";
 import { useCompactHeader } from "@/components/pet-deck/useCompactHeader";
+import type { BrowseView } from "@/components/pet-deck/types";
 
 type DeckHeaderProps = {
+  currentView: BrowseView;
   shortlistCount: number;
   isFiltersOpen: boolean;
   isShortlistOpen: boolean;
   isMobileMenuOpen: boolean;
   onToggleFilters: () => void;
+  onSelectView: (view: BrowseView) => void;
   onOpenFilters: () => void;
   onOpenShortlist: () => void;
   onToggleMobileMenu: () => void;
@@ -21,11 +24,13 @@ type DeckHeaderProps = {
 };
 
 export function DeckHeader({
+  currentView,
   shortlistCount,
   isFiltersOpen,
   isShortlistOpen,
   isMobileMenuOpen,
   onToggleFilters,
+  onSelectView,
   onOpenFilters,
   onOpenShortlist,
   onToggleMobileMenu,
@@ -98,7 +103,35 @@ export function DeckHeader({
             </IconButton>
           </div>
         ) : (
-          <div className="ml-auto flex shrink-0 items-center gap-2 sm:justify-end">
+          <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+            <div className="flex rounded-lg border border-border bg-card/90 p-1 shadow-sm">
+              <button
+                type="button"
+                aria-pressed={currentView === "deck"}
+                onClick={() => onSelectView("deck")}
+                className={
+                  currentView === "deck"
+                    ? "inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-black text-primary-foreground shadow-sm"
+                    : "inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-black text-muted-foreground transition hover:bg-muted/60 hover:text-foreground"
+                }
+              >
+                <Layers3 className="h-4 w-4" />
+                {appCopy.app.deckView}
+              </button>
+              <button
+                type="button"
+                aria-pressed={currentView === "gallery"}
+                onClick={() => onSelectView("gallery")}
+                className={
+                  currentView === "gallery"
+                    ? "inline-flex h-9 items-center gap-2 rounded-md bg-primary px-3 text-sm font-black text-primary-foreground shadow-sm"
+                    : "inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-black text-muted-foreground transition hover:bg-muted/60 hover:text-foreground"
+                }
+              >
+                <GalleryHorizontalEnd className="h-4 w-4" />
+                {appCopy.app.galleryView}
+              </button>
+            </div>
             <Button
               aria-label={appCopy.filters.open}
               aria-expanded={isFiltersOpen}
@@ -131,9 +164,33 @@ export function DeckHeader({
         <div className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-40 rounded-lg border-2 border-accent bg-popover p-3 shadow-panel">
           <button
             type="button"
+            aria-pressed={currentView === "deck"}
+            onClick={() => {
+              onSelectView("deck");
+              onCloseMobileMenu();
+            }}
+            className="flex h-12 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-black text-secondary-foreground transition hover:bg-secondary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <Layers3 className="h-5 w-5" />
+            <span>{appCopy.app.deckView}</span>
+          </button>
+          <button
+            type="button"
+            aria-pressed={currentView === "gallery"}
+            onClick={() => {
+              onSelectView("gallery");
+              onCloseMobileMenu();
+            }}
+            className="mt-1 flex h-12 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-black text-secondary-foreground transition hover:bg-secondary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <GalleryHorizontalEnd className="h-5 w-5" />
+            <span>{appCopy.app.galleryView}</span>
+          </button>
+          <button
+            type="button"
             aria-label={appCopy.filters.open}
             onClick={onOpenFilters}
-            className="flex h-12 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-black text-secondary-foreground transition hover:bg-secondary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="mt-1 flex h-12 w-full items-center gap-3 rounded-md px-3 text-left text-sm font-black text-secondary-foreground transition hover:bg-secondary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <SlidersHorizontal className="h-5 w-5" />
             <span>{appCopy.filters.open}</span>

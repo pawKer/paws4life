@@ -9,17 +9,21 @@ import { DeckBackground } from "@/components/pet-deck/DeckBackground";
 import { DeckHeader } from "@/components/pet-deck/DeckHeader";
 import { EmptyDeck } from "@/components/pet-deck/EmptyDeck";
 import { FiltersPanel } from "@/components/pet-deck/FiltersPanel";
+import { GalleryView } from "@/components/pet-deck/GalleryView";
 import { MatchDialog } from "@/components/pet-deck/MatchDialog";
 import { PetCardView } from "@/components/pet-deck/PetCardView";
 import { ShortlistDrawer } from "@/components/pet-deck/ShortlistDrawer";
+import { SwipeHint } from "@/components/pet-deck/SwipeHint";
 import { formatSync } from "@/components/pet-deck/petProfile";
+import { useShortlist } from "@/components/pet-deck/useShortlist";
 import {
+  type BrowseView,
   type Filters,
   initialFilters,
-  shortlistStorageKey,
 } from "@/components/pet-deck/types";
 import { filterPetCards } from "@/lib/pets/filter";
 import type { LatestSync, PetCard } from "@/lib/pets/types";
+import { cn } from "@/lib/ui/classNames";
 
 type PetDeckProps = {
   initialPets: PetCard[];
@@ -29,12 +33,20 @@ type PetDeckProps = {
 export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
   const cardDragX = useMotionValue(0);
   const [filters, setFilters] = useState<Filters>(initialFilters);
+  const [currentView, setCurrentView] = useState<BrowseView>("deck");
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [shortlistIds, setShortlistIds] = useState<string[]>([]);
   const [matchedPet, setMatchedPet] = useState<PetCard | null>(null);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isShortlistOpen, setIsShortlistOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showSwipeHints, setShowSwipeHints] = useState(true);
+  const {
+    shortlistedPets,
+    addToShortlist,
+    removeFromShortlist,
+    toggleShortlist,
+    isShortlisted,
+  } = useShortlist(initialPets);
 
   const availablePets = useMemo(
     () => initialPets.filter((pet) => pet.isAvailable),
@@ -46,39 +58,67 @@ export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
   );
   const currentPet =
     filteredPets[currentIndex % Math.max(filteredPets.length, 1)] ?? null;
-  const petsById = useMemo(
-    () => new Map(initialPets.map((pet) => [pet.id, pet] as const)),
-    [initialPets],
-  );
-  const shortlistedPets = shortlistIds
-    .map((id) => petsById.get(id))
-    .filter((pet): pet is PetCard => Boolean(pet));
-
   useEffect(() => {
     cardDragX.set(0);
   }, [cardDragX, currentPet?.id]);
 
   useEffect(() => {
-    const storedShortlist = readStoredShortlist();
+    setCurrentView(getInitialView());
 
-    if (storedShortlist) {
-      setShortlistIds(storedShortlist);
+    function syncViewFromHistory() {
+      setCurrentView(getInitialView());
     }
+
+    window.addEventListener("popstate", syncViewFromHistory);
+
+    return () => window.removeEventListener("popstate", syncViewFromHistory);
   }, []);
+
+  useEffect(() => {
+    if (currentView !== "deck" || !showSwipeHints) {
+      return;
+    }
+
+    const hideHints = () => setShowSwipeHints(false);
+    const timeout = window.setTimeout(hideHints, 6500);
+    const options = { once: true } as AddEventListenerOptions;
+
+    window.addEventListener("pointerdown", hideHints, options);
+    window.addEventListener("keydown", hideHints, options);
+    window.addEventListener("wheel", hideHints, options);
+    window.addEventListener("touchstart", hideHints, options);
+
+    return () => {
+      window.clearTimeout(timeout);
+      window.removeEventListener("pointerdown", hideHints);
+      window.removeEventListener("keydown", hideHints);
+      window.removeEventListener("wheel", hideHints);
+      window.removeEventListener("touchstart", hideHints);
+    };
+  }, [currentView, showSwipeHints]);
 
   function updateFilters(nextFilters: Filters) {
     setFilters(nextFilters);
     setCurrentIndex(0);
   }
 
-  function persistShortlist(nextIds: string[]) {
-    setShortlistIds(nextIds);
+  function selectView(view: BrowseView) {
+    setCurrentView(view);
+    setIsMobileMenuOpen(false);
 
-    try {
-      window.localStorage.setItem(shortlistStorageKey, JSON.stringify(nextIds));
-    } catch {
-      // Keep the in-memory shortlist usable if browser storage is unavailable.
+    if (typeof window === "undefined") {
+      return;
     }
+
+    const url = new URL(window.location.href);
+
+    if (view === "gallery") {
+      url.searchParams.set("view", "gallery");
+    } else {
+      url.searchParams.delete("view");
+    }
+
+    window.history.pushState({}, "", `${url.pathname}${url.search}${url.hash}`);
   }
 
   function likeCurrentPet() {
@@ -86,14 +126,15 @@ export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
       return;
     }
 
-    if (!shortlistIds.includes(currentPet.id)) {
-      persistShortlist([...shortlistIds, currentPet.id]);
-    }
+    setShowSwipeHints(false);
+    addToShortlist(currentPet.id);
 
     setMatchedPet(currentPet);
   }
 
   function showNextPet() {
+    setShowSwipeHints(false);
+
     if (filteredPets.length > 0) {
       setCurrentIndex((index) => (index + 1) % filteredPets.length);
     }
@@ -114,10 +155,6 @@ export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
     setIsMobileMenuOpen(false);
   }
 
-  function removeFromShortlist(id: string) {
-    persistShortlist(shortlistIds.filter((shortlistId) => shortlistId !== id));
-  }
-
   return (
     <main
       data-testid="pet-deck-root"
@@ -128,11 +165,13 @@ export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-4 sm:px-6 sm:py-5">
         <DeckHeader
+          currentView={currentView}
           shortlistCount={shortlistedPets.length}
           isFiltersOpen={isFiltersOpen}
           isShortlistOpen={isShortlistOpen}
           isMobileMenuOpen={isMobileMenuOpen}
           onToggleFilters={() => setIsFiltersOpen((value) => !value)}
+          onSelectView={selectView}
           onOpenFilters={openFiltersFromMenu}
           onOpenShortlist={openShortlist}
           onToggleMobileMenu={() => setIsMobileMenuOpen((value) => !value)}
@@ -157,20 +196,50 @@ export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
           </>
         ) : null}
 
-        <section className="flex flex-1 items-start justify-center py-5 sm:items-center sm:py-7">
-          {currentPet ? (
-            <div className="w-full max-w-[450px]">
-              <PetCardView
-                pet={currentPet}
-                dragX={cardDragX}
-                onLike={likeCurrentPet}
-                onNext={showNextPet}
-              />
-            </div>
-          ) : (
-            <EmptyDeck />
-          )}
-        </section>
+        {currentView === "gallery" ? (
+          <GalleryView
+            pets={filteredPets}
+            spotlightPets={availablePets}
+            onToggleSave={toggleShortlist}
+            isSaved={isShortlisted}
+          />
+        ) : (
+          <section className="flex flex-1 items-start justify-center py-5 sm:items-center sm:py-7">
+            {currentPet ? (
+              <div className="grid w-full max-w-5xl grid-cols-2 items-center gap-3 sm:grid-cols-[minmax(8rem,1fr)_minmax(0,450px)_minmax(8rem,1fr)] sm:gap-5">
+                {showSwipeHints ? (
+                  <SwipeHint
+                    direction="left"
+                    className="col-start-1 row-start-1 justify-self-start sm:col-start-1 sm:row-start-1 sm:justify-self-end"
+                  />
+                ) : null}
+                <div
+                  className={cn(
+                    "w-full max-w-[450px] justify-self-center",
+                    showSwipeHints
+                      ? "col-span-2 col-start-1 row-start-2 sm:col-span-1 sm:col-start-2 sm:row-start-1"
+                      : "col-span-2 col-start-1 row-start-1 sm:col-span-1 sm:col-start-2",
+                  )}
+                >
+                  <PetCardView
+                    pet={currentPet}
+                    dragX={cardDragX}
+                    onLike={likeCurrentPet}
+                    onNext={showNextPet}
+                  />
+                </div>
+                {showSwipeHints ? (
+                  <SwipeHint
+                    direction="right"
+                    className="col-start-2 row-start-1 justify-self-end sm:col-start-3 sm:row-start-1 sm:justify-self-start"
+                  />
+                ) : null}
+              </div>
+            ) : (
+              <EmptyDeck />
+            )}
+          </section>
+        )}
 
         <footer className="pb-3 text-center text-xs font-bold text-muted-foreground">
           {appCopy.app.lastSyncPrefix}: {formatSync(latestRun)}
@@ -189,23 +258,12 @@ export function PetDeck({ initialPets, latestRun }: PetDeckProps) {
   );
 }
 
-function readStoredShortlist(): string[] | null {
-  const stored = window.localStorage.getItem(shortlistStorageKey);
-
-  if (!stored) {
-    return null;
+function getInitialView(): BrowseView {
+  if (typeof window === "undefined") {
+    return "deck";
   }
 
-  try {
-    const parsed = JSON.parse(stored) as unknown;
-
-    if (Array.isArray(parsed) && parsed.every((id) => typeof id === "string")) {
-      return parsed;
-    }
-  } catch {
-    // Clear corrupt data so future visits start cleanly.
-  }
-
-  window.localStorage.removeItem(shortlistStorageKey);
-  return null;
+  return new URLSearchParams(window.location.search).get("view") === "gallery"
+    ? "gallery"
+    : "deck";
 }

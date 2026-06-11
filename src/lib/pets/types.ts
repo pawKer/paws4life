@@ -7,7 +7,9 @@ export type PetCard = {
   registryNumber: string;
   title: string | null;
   imageUrl: string | null;
+  captureDate: string | null;
   captureDateText: string | null;
+  firstSeenAt: string;
   captureLocation: string | null;
   approximateAge: string | null;
   sex: PetSex;

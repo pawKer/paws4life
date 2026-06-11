@@ -1,14 +1,17 @@
 "use client";
 
-import { ArrowRight, BadgeCheck, Heart } from "lucide-react";
+import { ArrowRight, BadgeCheck, Heart, Share2, UserRound } from "lucide-react";
 import { motion, useReducedMotion, useTransform } from "motion/react";
 import type { MotionValue } from "motion/react";
+import Link from "next/link";
+import { useState } from "react";
 import React from "react";
 
 import { appCopy } from "@/content/ro";
 import { Pill } from "@/components/ui/badge";
 import { IconButton } from "@/components/ui/button";
 import { buildPetProfile } from "@/components/pet-deck/petProfile";
+import { buildPetPath } from "@/lib/pets/gallery";
 import type { PetCard } from "@/lib/pets/types";
 
 type PetCardViewProps = {
@@ -20,6 +23,7 @@ type PetCardViewProps = {
 
 export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
   const profile = buildPetProfile(pet);
+  const [shareStatus, setShareStatus] = useState<string | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const rotate = useTransform(dragX, [-220, 0, 220], [-9, 0, 9]);
   const likeOpacity = useTransform(dragX, [36, 130], [0, 1]);
@@ -27,6 +31,27 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
 
   function resetDrag() {
     dragX.set(0);
+  }
+
+  async function sharePet() {
+    const path = buildPetPath(pet);
+    const url = `${window.location.origin}${path}`;
+    const title = `${profile.name} - ${appCopy.app.name}`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+        return;
+      }
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        setShareStatus(appCopy.gallery.copied);
+        window.setTimeout(() => setShareStatus(null), 1800);
+      }
+    } catch {
+      setShareStatus(null);
+    }
   }
 
   return (
@@ -53,7 +78,7 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       style={{ x: dragX, rotate: shouldReduceMotion ? 0 : rotate }}
       transition={{ duration: shouldReduceMotion ? 0 : 0.22 }}
-      className="touch-pan-y cursor-grab overflow-hidden rounded-lg border border-border bg-card shadow-card ring-1 ring-card/80 active:cursor-grabbing"
+      className="touch-pan-y cursor-grab overflow-hidden rounded-lg border border-white/70 bg-card/90 shadow-[0_24px_70px_hsl(var(--shadow-soft)_/_0.22)] ring-1 ring-border/55 backdrop-blur-sm active:cursor-grabbing"
     >
       <div className="relative aspect-[3/4] bg-success/15">
         {pet.imageUrl ? (
@@ -118,8 +143,8 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
         </div>
       </div>
 
-      <div className="space-y-4 bg-accent/25 p-4">
-        <section>
+      <div className="space-y-4 bg-card/95 p-4 sm:p-5">
+        <section className="rounded-lg border border-border/70 bg-muted/25 p-4">
           <h3 className="text-sm font-black text-foreground">
             {appCopy.deck.about}
           </h3>
@@ -130,11 +155,13 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
 
         <div className="flex flex-wrap gap-2">
           {profile.chips.map((chip) => (
-            <Pill key={chip}>{chip}</Pill>
+            <Pill key={chip} className="bg-card/90">
+              {chip}
+            </Pill>
           ))}
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-t border-border/70 pt-4 sm:flex-row sm:items-center sm:justify-between">
           <a
             href={pet.sourceUrl}
             target="_blank"
@@ -143,7 +170,22 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
           >
             {appCopy.app.sourceLink}
           </a>
-          <div className="flex justify-end gap-3">
+          <div className="flex items-center justify-end gap-2">
+            <Link
+              href={buildPetPath(pet)}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-secondary/35 bg-card/95 px-4 text-sm font-black text-secondary-foreground shadow-sm transition motion-safe:hover:-translate-y-0.5 hover:bg-secondary/10 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <UserRound className="h-4 w-4" />
+              {appCopy.deck.profile}
+            </Link>
+            <IconButton
+              label={shareStatus ?? appCopy.gallery.share}
+              onClick={sharePet}
+              tone="secondary"
+              className="h-11 w-11"
+            >
+              <Share2 className="h-5 w-5" />
+            </IconButton>
             <IconButton
               label={appCopy.deck.next}
               onClick={onNext}

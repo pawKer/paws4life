@@ -60,6 +60,31 @@ export async function getLatestScrapeRun(): Promise<LatestSync> {
   }
 }
 
+export async function getPetCardById(id: string): Promise<PetCard | null> {
+  try {
+    const shelter = await getDefaultShelter(prisma);
+
+    if (!shelter) {
+      return null;
+    }
+
+    const pet = await prisma.pet.findFirst({
+      where: {
+        id,
+        shelterId: shelter.id,
+      },
+    });
+
+    return pet ? toPetCard(pet) : null;
+  } catch (error) {
+    if (isMissingDatabaseError(error)) {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
 export function toPetCard(pet: Pet): PetCard {
   return {
     id: pet.id,
@@ -67,7 +92,9 @@ export function toPetCard(pet: Pet): PetCard {
     registryNumber: pet.registryNumber,
     title: pet.title,
     imageUrl: pet.imageUrl,
+    captureDate: pet.captureDate?.toISOString() ?? null,
     captureDateText: pet.captureDateText,
+    firstSeenAt: pet.firstSeenAt.toISOString(),
     captureLocation: pet.captureLocation,
     approximateAge: pet.approximateAge,
     sex: coerceSex(pet.sex),

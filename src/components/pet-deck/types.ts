@@ -6,6 +6,8 @@ export type Filters = {
   q: string;
 };
 
+export type BrowseView = "deck" | "gallery";
+
 export const initialFilters: Filters = {
   sex: "all",
   size: "all",

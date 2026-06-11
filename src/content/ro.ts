@@ -8,6 +8,8 @@ export const appCopy = {
     sourceLink: "Vezi anunțul oficial",
     lastSyncPrefix: "Ultima sincronizare",
     menuOpen: "Meniu",
+    deckView: "Deck",
+    galleryView: "Galerie",
     menuClose: "Închide meniul"
   },
   filters: {
@@ -34,6 +36,11 @@ export const appCopy = {
     profilePhotoAction: "Reacționează la fotografie",
     about: "Despre mine",
     lookingFor: "Caut o familie",
+    swipeLeft: "Glisează stânga",
+    swipeLeftAction: "următorul cățel",
+    swipeRight: "Glisează dreapta",
+    swipeRightAction: "salvează în listă",
+    profile: "Profil",
     emptyTitle: "Nu mai sunt căței în lista curentă",
     emptyBody: "Schimbă filtrele sau revino după următoarea sincronizare.",
     unavailable: "Nu mai apare pe site",
@@ -52,6 +59,9 @@ export const appCopy = {
     close: "Continuă"
   },
   adoption: {
+    ctaMale: "Adoptă-l pe",
+    ctaFemale: "Adopt-o pe",
+    ctaNeutral: "Adoptă acum:",
     cta: "Adoptă acum",
     title: "Informații pentru adopție",
     intro: "Sună adăpostul și verifică pașii oficiali înainte de vizită.",
@@ -88,6 +98,30 @@ export const appCopy = {
     empty: "Alege câinii care ți-au atras atenția și îi vei vedea aici.",
     remove: "Scoate din listă",
     countSuffix: "în listă"
+  },
+  gallery: {
+    title: "Toți cățeii",
+    subtitle: "căței disponibili",
+    dogOfDay: "Câinele zilei",
+    dogOfDayFallback: "Un prieten care așteaptă o familie.",
+    meet: "Cunoaște",
+    save: "Salvează",
+    saved: "Salvat",
+    quickFilters: "Filtre rapide",
+    sortLabel: "Sortează",
+    recommended: "Recomandat",
+    longestWaiting: "Așteaptă de mult",
+    newestCapture: "Capturați recent",
+    recentlyAdded: "Adăugați recent",
+    young: "Tineri",
+    adult: "Adulți",
+    senior: "Seniori",
+    loadingMore: "Se încarcă mai mulți prieteni...",
+    share: "Distribuie",
+    copied: "Link copiat",
+    detailsBack: "Înapoi",
+    detailTitle: "Profil adopție",
+    unavailableDetail: "Acest câine nu mai apare ca disponibil pe site-ul adăpostului."
   },
   status: {
     loading: "Se încarcă...",

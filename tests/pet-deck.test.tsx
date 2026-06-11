@@ -13,7 +13,9 @@ const pets: PetCard[] = [
     registryNumber: "1022",
     title: "Adoptă un câine -1022 - Adăpost Canin Craiova",
     imageUrl: "https://www.adapostcanincraiova.ro/wp-content/uploads/2026/06/1022.jpg",
+    captureDate: "2026-06-04T00:00:00.000Z",
     captureDateText: "04.06.2026",
+    firstSeenAt: "2026-06-04T00:00:00.000Z",
     captureLocation: "Cartier Brestei",
     approximateAge: "3-4 ani",
     sex: "female",
@@ -30,7 +32,9 @@ const pets: PetCard[] = [
     registryNumber: "931",
     title: "Adoptă un câine -931 - Adăpost Canin Craiova",
     imageUrl: "https://www.adapostcanincraiova.ro/wp-content/uploads/2026/05/931.jpg",
+    captureDate: "2026-05-20T00:00:00.000Z",
     captureDateText: "20.05.2026",
+    firstSeenAt: "2026-05-20T00:00:00.000Z",
     captureLocation: "Craiovița Nouă",
     approximateAge: "6-7 ani",
     sex: "male",
@@ -46,6 +50,7 @@ const pets: PetCard[] = [
 describe("PetDeck", () => {
   beforeEach(() => {
     window.localStorage.clear();
+    window.history.pushState({}, "", "/");
     vi.restoreAllMocks();
   });
 
@@ -117,6 +122,32 @@ describe("PetDeck", () => {
     expect(screen.getByText(`${appCopy.deck.size}: ${appCopy.filters.small}`)).toBeInTheDocument();
     expect(screen.getByText(`${appCopy.deck.color}: negru-maro`)).toBeInTheDocument();
     expect(screen.getByText(appCopy.deck.lookingFor)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: appCopy.deck.profile })).toHaveAttribute(
+      "href",
+      `/pets/${pets[0].id}`,
+    );
+    expect(screen.getByRole("button", { name: appCopy.gallery.share })).toBeInTheDocument();
+  });
+
+  it("shows animated swipe guidance in the deck view only", () => {
+    render(<PetDeck initialPets={pets} latestRun={null} />);
+
+    expect(screen.getByText(appCopy.deck.swipeLeft)).toBeInTheDocument();
+    expect(screen.getByText(appCopy.deck.swipeRight)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: appCopy.app.galleryView }));
+
+    expect(screen.queryByText(appCopy.deck.swipeLeft)).not.toBeInTheDocument();
+    expect(screen.queryByText(appCopy.deck.swipeRight)).not.toBeInTheDocument();
+  });
+
+  it("hides swipe guidance after the user interacts with the page", () => {
+    render(<PetDeck initialPets={pets} latestRun={null} />);
+
+    fireEvent.pointerDown(window);
+
+    expect(screen.queryByText(appCopy.deck.swipeLeft)).not.toBeInTheDocument();
+    expect(screen.queryByText(appCopy.deck.swipeRight)).not.toBeInTheDocument();
   });
 
   it("prefers AI generated profile copy when it is available", () => {
@@ -171,7 +202,7 @@ describe("PetDeck", () => {
     render(<PetDeck initialPets={pets} latestRun={null} />);
 
     fireEvent.click(screen.getByRole("button", { name: appCopy.deck.like }));
-    fireEvent.click(screen.getByRole("button", { name: appCopy.adoption.cta }));
+    fireEvent.click(screen.getByRole("button", { name: /Bruno/ }));
 
     expect(screen.getByText(appCopy.adoption.title)).toBeInTheDocument();
     expect(screen.getByText(appCopy.adoption.address)).toBeInTheDocument();
@@ -222,7 +253,7 @@ describe("PetDeck", () => {
     expect(screen.getByText(`${appCopy.deck.registryPrefix} 1022`)).toBeInTheDocument();
   });
 
-  it("links shortlist items to the official listing and enlarges thumbnails on hover", () => {
+  it("links shortlist items to the official listing and previews thumbnails on hover", () => {
     render(<PetDeck initialPets={pets} latestRun={null} />);
 
     fireEvent.click(screen.getByRole("button", { name: appCopy.deck.like }));
@@ -235,15 +266,51 @@ describe("PetDeck", () => {
     );
     expect(screen.getByRole("link", { name: "Bruno" })).toHaveAttribute(
       "href",
-      pets[0].sourceUrl
+      `/pets/${pets[0].id}`
     );
     expect(screen.getAllByRole("link", { name: appCopy.app.sourceLink }).at(-1)).toHaveAttribute(
       "href",
       pets[0].sourceUrl
     );
-    expect(screen.getAllByAltText(`${appCopy.status.imageAltPrefix} 1022`).at(-1)).toHaveClass(
-      "motion-safe:group-hover/preview:scale-[2.15]"
+    const thumbnailLink = screen.getByRole("link", {
+      name: `${appCopy.app.sourceLink} 1022`,
+    });
+    thumbnailLink.getBoundingClientRect = vi.fn(
+      () =>
+        ({
+          top: 260,
+          bottom: 340,
+          left: 400,
+          right: 464,
+          width: 64,
+          height: 80,
+          x: 400,
+          y: 260,
+          toJSON: vi.fn(),
+        }) as DOMRect,
     );
+
+    expect(screen.queryByTestId("shortlist-image-preview")).not.toBeInTheDocument();
+
+    fireEvent.mouseEnter(thumbnailLink);
+
+    expect(screen.getByTestId("shortlist-image-preview")).toHaveStyle({
+      top: "300px",
+    });
+
+    fireEvent.mouseLeave(thumbnailLink);
+
+    expect(screen.queryByTestId("shortlist-image-preview")).not.toBeInTheDocument();
+
+    fireEvent.focus(thumbnailLink);
+
+    expect(screen.getByTestId("shortlist-image-preview")).toHaveStyle({
+      top: "300px",
+    });
+
+    fireEvent.blur(thumbnailLink);
+
+    expect(screen.queryByTestId("shortlist-image-preview")).not.toBeInTheDocument();
   });
 
   it("shows adoption contact information from the shortlist", () => {

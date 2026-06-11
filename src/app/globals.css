@@ -63,6 +63,26 @@ select {
   }
 }
 
+@keyframes swipe-hint-left {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-0.45rem);
+  }
+}
+
+@keyframes swipe-hint-right {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(0.45rem);
+  }
+}
+
 .adoption-rainbow-border {
   background-image: linear-gradient(
     90deg,
@@ -76,8 +96,18 @@ select {
   animation: adoption-rainbow-pan 4s linear infinite;
 }
 
+.swipe-hint-left {
+  animation: swipe-hint-left 1.9s ease-in-out infinite;
+}
+
+.swipe-hint-right {
+  animation: swipe-hint-right 1.9s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .adoption-rainbow-border {
+  .adoption-rainbow-border,
+  .swipe-hint-left,
+  .swipe-hint-right {
     animation: none;
   }
 }

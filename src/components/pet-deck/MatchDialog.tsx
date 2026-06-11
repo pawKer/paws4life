@@ -9,6 +9,7 @@ import React from "react";
 import { appCopy } from "@/content/ro";
 import { AdoptionInfo } from "@/components/pet-deck/AdoptionInfo";
 import { Button } from "@/components/ui/button";
+import { buildPetProfile } from "@/components/pet-deck/petProfile";
 import type { PetCard } from "@/lib/pets/types";
 
 const confettiColorTokens = [
@@ -47,6 +48,7 @@ type MatchDialogProps = {
 
 export function MatchDialog({ pet, onClose }: MatchDialogProps) {
   const shouldReduceMotion = useReducedMotion();
+  const profile = pet ? buildPetProfile(pet) : null;
 
   useEffect(() => {
     if (!pet || shouldReduceMotion || process.env.NODE_ENV === "test") {
@@ -123,7 +125,11 @@ export function MatchDialog({ pet, onClose }: MatchDialogProps) {
               <Dialog.Description className="mt-3 font-semibold text-muted-foreground">
                 {appCopy.match.body}
               </Dialog.Description>
-              <AdoptionInfo className="mt-5 text-center" />
+              <AdoptionInfo
+                className="mt-5 text-center"
+                petName={profile?.name}
+                petSex={pet.sex}
+              />
               <Dialog.Close asChild>
                 <Button variant="primary" className="mt-4 px-5">
                   {appCopy.match.close}
