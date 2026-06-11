@@ -41,16 +41,23 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
     try {
       if (navigator.share) {
         await navigator.share({ title, url });
+        setShareStatus(appCopy.gallery.shareDone);
+        window.setTimeout(() => setShareStatus(null), 2200);
         return;
       }
 
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(url);
         setShareStatus(appCopy.gallery.copied);
-        window.setTimeout(() => setShareStatus(null), 1800);
+        window.setTimeout(() => setShareStatus(null), 2200);
+        return;
       }
+
+      setShareStatus(appCopy.gallery.shareUnavailable);
+      window.setTimeout(() => setShareStatus(null), 2200);
     } catch {
-      setShareStatus(null);
+      setShareStatus(appCopy.gallery.shareUnavailable);
+      window.setTimeout(() => setShareStatus(null), 2200);
     }
   }
 
@@ -170,30 +177,35 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
           >
             {appCopy.app.sourceLink}
           </a>
-          <div className="flex items-center justify-end gap-2">
-            <Link
-              href={buildPetPath(pet)}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-secondary/35 bg-card/95 px-4 text-sm font-black text-secondary-foreground shadow-sm transition motion-safe:hover:-translate-y-0.5 hover:bg-secondary/10 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              <UserRound className="h-4 w-4" />
-              {appCopy.deck.profile}
-            </Link>
-            <IconButton
-              label={shareStatus ?? appCopy.gallery.share}
-              onClick={sharePet}
-              tone="secondary"
-              className="h-11 w-11"
-            >
-              <Share2 className="h-5 w-5" />
-            </IconButton>
-            <IconButton
-              label={appCopy.deck.next}
-              onClick={onNext}
-              tone="light"
-              className="h-14 w-14 hover:-translate-y-1"
-            >
-              <ArrowRight className="h-7 w-7" />
-            </IconButton>
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex items-center justify-end gap-2">
+              <Link
+                href={buildPetPath(pet)}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-secondary/35 bg-card/95 px-4 text-sm font-black text-secondary-foreground shadow-sm transition motion-safe:hover:-translate-y-0.5 hover:bg-secondary/10 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                <UserRound className="h-4 w-4" />
+                {appCopy.deck.profile}
+              </Link>
+              <IconButton
+                label={shareStatus ?? appCopy.gallery.share}
+                onClick={sharePet}
+                tone="secondary"
+                className="h-11 w-11"
+              >
+                <Share2 className="h-5 w-5" />
+              </IconButton>
+              <IconButton
+                label={appCopy.deck.next}
+                onClick={onNext}
+                tone="light"
+                className="h-14 w-14 hover:-translate-y-1"
+              >
+                <ArrowRight className="h-7 w-7" />
+              </IconButton>
+            </div>
+            <span aria-live="polite" className="min-h-4 text-xs font-black text-primary">
+              {shareStatus}
+            </span>
           </div>
         </div>
       </div>

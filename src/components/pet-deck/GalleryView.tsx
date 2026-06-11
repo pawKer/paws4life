@@ -105,30 +105,32 @@ export function GalleryView({
           </label>
         </div>
 
-        <div
-          aria-label={appCopy.gallery.quickFilters}
-          className="mt-4 flex gap-2 overflow-x-auto pb-1"
-        >
-          {quickFilters.map((filter) => {
-            const active = quickFilter === filter.value;
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div
+            aria-label={appCopy.gallery.quickFilters}
+            className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1"
+          >
+            {quickFilters.map((filter) => {
+              const active = quickFilter === filter.value;
 
-            return (
-              <button
-                key={filter.value}
-                type="button"
-                aria-pressed={active}
-                onClick={() => setQuickFilter(active ? null : filter.value)}
-                className={cn(
-                  "shrink-0 rounded-full border px-3 py-2 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  active
-                    ? "border-primary bg-primary text-primary-foreground shadow-primary"
-                    : "border-border/70 bg-card/90 text-muted-foreground shadow-sm hover:border-primary/45 hover:text-foreground",
-                )}
-              >
-                {filter.label}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={filter.value}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setQuickFilter(active ? null : filter.value)}
+                  className={cn(
+                    "shrink-0 rounded-full border px-3 py-2 text-sm font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    active
+                      ? "border-primary bg-primary text-primary-foreground shadow-primary"
+                      : "border-border/70 bg-card/90 text-muted-foreground shadow-sm hover:border-primary/45 hover:text-foreground",
+                  )}
+                >
+                  {filter.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 

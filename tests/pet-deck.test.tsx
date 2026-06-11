@@ -141,6 +141,37 @@ describe("PetDeck", () => {
     expect(screen.queryByText(appCopy.deck.swipeRight)).not.toBeInTheDocument();
   });
 
+  it("shows feedback after sharing a pet from the deck card", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(window.navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    Object.defineProperty(window.navigator, "share", {
+      configurable: true,
+      value: undefined,
+    });
+
+    render(<PetDeck initialPets={pets} latestRun={null} />);
+
+    fireEvent.click(screen.getByRole("button", { name: appCopy.gallery.share }));
+
+    expect(writeText).toHaveBeenCalledWith(expect.stringContaining(`/pets/${pets[0].id}`));
+    expect(await screen.findByText(appCopy.gallery.copied)).toBeInTheDocument();
+  });
+
+  it("opens advanced filters from the header while in gallery view", () => {
+    render(<PetDeck initialPets={pets} latestRun={null} />);
+
+    fireEvent.click(screen.getByRole("button", { name: appCopy.app.galleryView }));
+
+    expect(screen.getAllByRole("button", { name: appCopy.filters.open })).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole("button", { name: appCopy.filters.open }));
+
+    expect(screen.getByPlaceholderText(appCopy.filters.searchPlaceholder)).toBeInTheDocument();
+  });
+
   it("hides swipe guidance after the user interacts with the page", () => {
     render(<PetDeck initialPets={pets} latestRun={null} />);
 

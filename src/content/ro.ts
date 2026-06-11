@@ -118,7 +118,9 @@ export const appCopy = {
     senior: "Seniori",
     loadingMore: "Se încarcă mai mulți prieteni...",
     share: "Distribuie",
+    shareDone: "Distribuit",
     copied: "Link copiat",
+    shareUnavailable: "Nu s-a putut copia",
     detailsBack: "Înapoi",
     detailTitle: "Profil adopție",
     unavailableDetail: "Acest câine nu mai apare ca disponibil pe site-ul adăpostului."

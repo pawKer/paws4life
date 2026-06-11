@@ -104,6 +104,14 @@ export function DeckHeader({
           </div>
         ) : (
           <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+            <Button
+              aria-label={appCopy.filters.open}
+              aria-expanded={isFiltersOpen}
+              icon={<SlidersHorizontal className="h-4 w-4" />}
+              onClick={onToggleFilters}
+            >
+              {appCopy.filters.open}
+            </Button>
             <div className="flex rounded-lg border border-border bg-card/90 p-1 shadow-sm">
               <button
                 type="button"
@@ -132,14 +140,6 @@ export function DeckHeader({
                 {appCopy.app.galleryView}
               </button>
             </div>
-            <Button
-              aria-label={appCopy.filters.open}
-              aria-expanded={isFiltersOpen}
-              icon={<SlidersHorizontal className="h-4 w-4" />}
-              onClick={onToggleFilters}
-            >
-              {appCopy.filters.open}
-            </Button>
             <Button
               variant="primary"
               aria-label={`${appCopy.shortlist.open} ${shortlistCount}`}

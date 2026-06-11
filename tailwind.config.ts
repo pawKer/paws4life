@@ -60,7 +60,7 @@ const config: Config = {
         gentle: "0 12px 34px hsl(var(--shadow-soft) / 0.12)",
         panel: "0 18px 45px hsl(var(--shadow-soft) / 0.16)",
         card: "0 30px 80px hsl(var(--shadow-soft) / 0.24)",
-        primary: "0 12px 26px hsl(var(--shadow-primary) / 0.32)"
+        primary: "0 8px 18px hsl(var(--shadow-primary) / 0.18)"
       }
     }
   },
