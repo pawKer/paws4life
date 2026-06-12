@@ -7,11 +7,12 @@ import React, { useState } from "react";
 
 import { appCopy } from "@/content/ro";
 import { AdoptionInfo } from "@/components/pet-deck/AdoptionInfo";
-import { Button, IconButton } from "@/components/ui/button";
+import { IconButton } from "@/components/ui/button";
 import { buildPetProfile } from "@/components/pet-deck/petProfile";
 import { SourceLinkButton } from "@/components/pet-deck/SourceLinkButton";
 import { buildPetPath } from "@/lib/pets/gallery";
 import type { PetCard } from "@/lib/pets/types";
+import { cn } from "@/lib/ui/classNames";
 
 const previewHeight = 288;
 const previewViewportPadding = 16;
@@ -116,12 +117,19 @@ export function ShortlistDrawer({
                     key={pet.id}
                     className="rounded-lg border border-border bg-card p-3"
                   >
-                    <div className="flex gap-3">
+                    <div
+                      className={cn(
+                        "grid items-start gap-x-3 gap-y-2",
+                        imageUrl
+                          ? "grid-cols-[4rem_minmax(0,1fr)_auto]"
+                          : "grid-cols-[minmax(0,1fr)_auto]",
+                      )}
+                    >
                       {imageUrl ? (
                         <a
-           target="_blank"
-           rel="noreferrer"
-            href={`/pets/${pet.id}`}
+                          href={`/pets/${pet.id}`}
+                          target="_blank"
+                          rel="noreferrer"
                           aria-label={`${appCopy.app.sourceLink} ${pet.registryNumber}`}
                           onMouseEnter={(event) =>
                             showPreview(imageUrl, event.currentTarget)
@@ -131,7 +139,7 @@ export function ShortlistDrawer({
                             showPreview(imageUrl, event.currentTarget)
                           }
                           onBlur={() => setPreview(null)}
-                          className="relative z-10 block h-20 w-16 shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                          className="relative z-10 col-start-1 row-span-3 block h-20 w-16 shrink-0 self-start rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                         >
                           <img
                             src={imageUrl}
@@ -142,38 +150,58 @@ export function ShortlistDrawer({
                           />
                         </a>
                       ) : null}
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0">
-                            <Link
-                              href={buildPetPath(pet)}
-                              className="block truncate font-black text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                            >
-                              {profile.name}
-                            </Link>
-                            <p className="mt-0.5 text-xs font-black uppercase tracking-[0.08em] text-muted-foreground">
-                              {appCopy.deck.registryPrefix} {pet.registryNumber}
-                            </p>
-                          </div>
+
+                      <IconButton
+                        label={appCopy.shortlist.remove}
+                        onClick={() => onRemove(pet.id)}
+                        className={cn(
+                          "col-start-3 row-start-1 h-8 w-8 border border-destructive/35 text-destructive shadow-sm hover:bg-destructive/10",
+                          !imageUrl && "col-start-2",
+                        )}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </IconButton>
+
+                      <div
+                        className={cn(
+                          "col-start-2 row-start-1 min-w-0",
+                          !imageUrl && "col-start-1",
+                        )}
+                      >
+                        <Link
+                          href={buildPetPath(pet)}
+                          className="block truncate font-black text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          {profile.name}
+                        </Link>
+                        <div className="mt-0.5 flex flex-wrap items-center gap-2">
+                          <p className="text-xs font-black uppercase tracking-[0.08em] text-muted-foreground">
+                            {appCopy.deck.registryPrefix} {pet.registryNumber}
+                          </p>
                           {!pet.isAvailable ? (
-                            <span className="shrink-0 rounded-md bg-accent px-2 py-1 text-xs font-black text-accent-foreground">
+                            <span className="rounded-md bg-accent px-2 py-1 text-xs font-black text-accent-foreground">
                               {appCopy.deck.unavailable}
                             </span>
                           ) : null}
                         </div>
-                        <p className="mt-1 text-sm font-semibold text-muted-foreground">
-                          {pet.captureLocation}
-                        </p>
-                        <SourceLinkButton href={pet.sourceUrl} className="mt-2" />
-                        <Button
-                          variant="danger"
-                          onClick={() => onRemove(pet.id)}
-                          icon={<Trash2 className="h-4 w-4" />}
-                          className="mt-2 h-auto px-0"
-                        >
-                          {appCopy.shortlist.remove}
-                        </Button>
                       </div>
+
+                      <p
+                        className={cn(
+                          "col-start-2 row-start-2 text-sm font-semibold text-muted-foreground",
+                          !imageUrl && "col-start-1",
+                        )}
+                      >
+                        {pet.captureLocation}
+                      </p>
+
+                      <SourceLinkButton
+                        href={pet.sourceUrl}
+                        className={cn(
+                          "col-start-2 row-start-3 mt-0",
+                          !imageUrl && "col-start-1",
+                        )}
+                      />
                     </div>
                   </article>
                 );

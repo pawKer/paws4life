@@ -17,7 +17,8 @@ const buttonVariants: Record<ButtonVariant, string> = {
     "border border-secondary/35 bg-card/95 text-secondary-foreground shadow-sm hover:bg-secondary/10",
   ghost:
     "border border-border bg-card text-secondary-foreground hover:bg-secondary/10",
-  danger: "text-destructive underline-offset-4 hover:underline",
+  danger:
+    "border border-destructive/35 bg-card/95 text-destructive shadow-sm hover:bg-destructive/10",
 };
 
 export function Button({
