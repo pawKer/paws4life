@@ -73,7 +73,7 @@ export function GalleryPetCard({ pet, saved, onToggleSave }: GalleryPetCardProps
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {profile.chips.slice(0, 3).map((chip) => (
-              <Pill key={chip} className="bg-card/90 py-1">
+              <Pill key={chip} tone="bio" className="py-1">
                 {chip}
               </Pill>
             ))}

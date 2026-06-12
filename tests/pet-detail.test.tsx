@@ -31,7 +31,14 @@ describe("PetDetailView", () => {
     render(<PetDetailView pet={pet} />);
 
     expect(screen.getByText(appCopy.deck.about)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /Bruno/ }));
+    const sizePill = screen.getByText(
+      `${appCopy.deck.size} ${appCopy.filters.small.toLocaleLowerCase("ro-RO")}`,
+    );
+    expect(sizePill).toHaveClass("bg-muted/25", "text-card-foreground");
+    const adoptionTrigger = screen.getByRole("button", { name: /Bruno/ });
+    expect(adoptionTrigger.querySelector(".lucide-heart-handshake")).toBeInTheDocument();
+    expect(adoptionTrigger.querySelector(".lucide-chevron-down")).not.toBeInTheDocument();
+    fireEvent.click(adoptionTrigger);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText(appCopy.adoption.title)).toBeInTheDocument();

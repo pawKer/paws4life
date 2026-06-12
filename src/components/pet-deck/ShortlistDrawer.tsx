@@ -153,9 +153,10 @@ export function ShortlistDrawer({
 
                       <IconButton
                         label={appCopy.shortlist.remove}
+                        tone="danger"
                         onClick={() => onRemove(pet.id)}
                         className={cn(
-                          "col-start-3 row-start-1 h-8 w-8 border border-destructive/35 text-destructive shadow-sm hover:bg-destructive/10",
+                          "col-start-3 row-start-1 h-8 w-8",
                           !imageUrl && "col-start-2",
                         )}
                       >

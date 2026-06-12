@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ChevronDown,
   Clock,
   ExternalLink,
   FileText,
@@ -97,17 +96,11 @@ function AdoptionTrigger({
       aria-expanded={isOpen}
       aria-controls={panelId}
       onClick={onClick}
-      className="adoption-rainbow-border group inline-flex rounded-full p-[2px] text-sm font-black shadow-primary transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      className="adoption-rainbow-border group relative isolate inline-flex rounded-full p-[2px] text-sm font-black transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
-      <span className="inline-flex min-h-11 items-center gap-2 rounded-full bg-card px-4 py-2 text-foreground transition group-hover:bg-card/90">
+      <span className="relative z-10 inline-flex min-h-11 items-center gap-2 rounded-full bg-card px-4 py-2 text-foreground transition group-hover:bg-card/90">
         <HeartHandshake className="h-4 w-4 text-primary" />
         {ctaLabel}
-        <ChevronDown
-          className={cn(
-            "h-4 w-4 text-muted-foreground transition",
-            isOpen ? "rotate-180" : "",
-          )}
-        />
       </span>
     </button>
   );

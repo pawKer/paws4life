@@ -66,14 +66,12 @@ select {
 @keyframes adoption-glow-pulse {
   0%,
   100% {
-    box-shadow:
-      0 8px 18px hsl(var(--shadow-primary) / 0.14),
-      0 0 0 0 hsl(var(--primary) / 0.22);
+    opacity: 0.28;
+    transform: scale(0.98);
   }
   50% {
-    box-shadow:
-      0 12px 28px hsl(var(--shadow-primary) / 0.22),
-      0 0 0 5px hsl(var(--accent) / 0.18);
+    opacity: 0.48;
+    transform: scale(1.03);
   }
 }
 
@@ -107,12 +105,19 @@ select {
     hsl(var(--primary))
   );
   background-size: 200% 100%;
-  animation:
-    adoption-rainbow-pan 4s linear infinite,
-    adoption-glow-pulse 4s ease-in-out infinite;
+  animation: adoption-rainbow-pan 4s linear infinite;
 }
 
-.adoption-rainbow-glow {
+.adoption-rainbow-border::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -0.3rem;
+  border-radius: inherit;
+  background-image: inherit;
+  background-size: inherit;
+  filter: blur(0.55rem);
+  pointer-events: none;
   animation:
     adoption-rainbow-pan 4s linear infinite,
     adoption-glow-pulse 4s ease-in-out infinite;
@@ -128,7 +133,7 @@ select {
 
 @media (prefers-reduced-motion: reduce) {
   .adoption-rainbow-border,
-  .adoption-rainbow-glow,
+  .adoption-rainbow-border::before,
   .swipe-hint-left,
   .swipe-hint-right {
     animation: none;

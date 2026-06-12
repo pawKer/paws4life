@@ -124,7 +124,9 @@ export function PetDetailView({ pet }: PetDetailViewProps) {
 
               <div className="mt-5 flex flex-wrap gap-2">
                 {profile.chips.map((chip) => (
-                  <Pill key={chip}>{chip}</Pill>
+                  <Pill key={chip} tone="bio">
+                    {chip}
+                  </Pill>
                 ))}
               </div>
 

@@ -163,7 +163,7 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
 
         <div className="flex flex-wrap gap-2">
           {profile.chips.map((chip) => (
-            <Pill key={chip} className="bg-card/90">
+            <Pill key={chip} tone="bio">
               {chip}
             </Pill>
           ))}

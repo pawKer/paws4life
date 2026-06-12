@@ -47,7 +47,7 @@ export function Button({
 
 type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   label: string;
-  tone?: "primary" | "secondary" | "light";
+  tone?: "primary" | "secondary" | "light" | "danger";
   badge?: number;
   children: ReactNode;
 };
@@ -59,6 +59,8 @@ const iconButtonTones = {
     "border border-secondary/35 bg-card/95 text-secondary-foreground shadow-sm hover:bg-secondary/10",
   light:
     "border-2 border-card bg-card text-success shadow-gentle hover:bg-success/10",
+  danger:
+    "border border-primary/45 bg-primary/10 text-primary shadow-sm hover:bg-primary hover:text-primary-foreground",
 };
 
 export function IconButton({

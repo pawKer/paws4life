@@ -3,11 +3,27 @@ import React from "react";
 
 import { cn } from "@/lib/ui/classNames";
 
-export function Pill({ children, className }: { children: ReactNode; className?: string }) {
+type PillTone = "default" | "bio";
+
+const pillTones: Record<PillTone, string> = {
+  default: "border-border bg-muted/65 text-accent-foreground",
+  bio: "border-border/70 bg-muted/25 text-card-foreground",
+};
+
+export function Pill({
+  children,
+  className,
+  tone = "default",
+}: {
+  children: ReactNode;
+  className?: string;
+  tone?: PillTone;
+}) {
   return (
     <span
       className={cn(
-        "max-w-full truncate rounded-full border border-border bg-muted/65 px-3 py-2 text-xs font-black text-accent-foreground shadow-sm",
+        "max-w-full truncate rounded-full border px-3 py-2 text-xs font-black shadow-sm",
+        pillTones[tone],
         className,
       )}
     >

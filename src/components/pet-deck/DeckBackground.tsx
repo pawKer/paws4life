@@ -46,16 +46,55 @@ const pawPrints = [
   },
 ];
 
+const galleryPawPrints = [
+  {
+    className: "right-[9%] top-[38%] h-12 w-12 rotate-[18deg] text-secondary",
+    drift: -8,
+    float: 6,
+    duration: 21,
+    delay: 0.4,
+  },
+  {
+    className: "left-[6%] top-[50%] h-16 w-16 rotate-[-12deg] text-primary",
+    drift: 12,
+    float: 8,
+    duration: 23,
+    delay: 1.8,
+  },
+  {
+    className: "right-[13%] top-[64%] h-14 w-14 rotate-[24deg] text-success",
+    drift: -9,
+    float: 7,
+    duration: 20,
+    delay: 2.4,
+  },
+  {
+    className:
+      "left-[15%] top-[79%] h-11 w-11 rotate-[-20deg] text-accent-foreground",
+    drift: 7,
+    float: 5,
+    duration: 18,
+    delay: 1.1,
+  },
+];
+
 type DeckBackgroundProps = {
   dragX: MotionValue<number>;
+  variant?: "default" | "gallery";
 };
 
-export function DeckBackground({ dragX }: DeckBackgroundProps) {
+export function DeckBackground({
+  dragX,
+  variant = "default",
+}: DeckBackgroundProps) {
+  const visiblePaws =
+    variant === "gallery" ? [...pawPrints, ...galleryPawPrints] : pawPrints;
+
   return (
     <div aria-hidden className="absolute inset-0 overflow-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(135deg,hsl(var(--deck-sky))_0%,hsl(var(--deck-mint))_54%,hsl(var(--background))_100%)]" />
       <div className="absolute inset-0 opacity-[0.13]">
-        {pawPrints.map((paw) => (
+        {visiblePaws.map((paw) => (
           <FloatingPaw key={paw.className} dragX={dragX} {...paw} />
         ))}
       </div>

@@ -132,7 +132,10 @@ export function PetDeck({ initialPets, latestRun, initialView }: PetDeckProps) {
       data-theme="playful-adoption-pass"
       className="relative min-h-dvh overflow-x-hidden bg-background text-foreground"
     >
-      <DeckBackground dragX={cardDragX} />
+      <DeckBackground
+        dragX={cardDragX}
+        variant={currentView === "gallery" ? "gallery" : "default"}
+      />
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-4 sm:px-6 sm:py-5">
         <DeckHeader

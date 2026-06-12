@@ -128,9 +128,11 @@ describe("PetDeck", () => {
 
     expect(screen.getByRole("heading", { name: /Bruno, 3/ })).toBeInTheDocument();
     expect(screen.getByText(appCopy.deck.about)).toBeInTheDocument();
-    expect(
-      screen.getByText(`${appCopy.deck.size} ${appCopy.filters.small.toLocaleLowerCase("ro-RO")}`)
-    ).toBeInTheDocument();
+    const sizePill = screen.getByText(
+      `${appCopy.deck.size} ${appCopy.filters.small.toLocaleLowerCase("ro-RO")}`,
+    );
+    expect(sizePill).toBeInTheDocument();
+    expect(sizePill).toHaveClass("bg-muted/25", "text-card-foreground");
     expect(screen.getByText(`${appCopy.deck.color}: negru-maro`)).toBeInTheDocument();
     expect(screen.getByText(appCopy.deck.lookingFor)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: appCopy.deck.profile })).toHaveAttribute(
@@ -141,15 +143,19 @@ describe("PetDeck", () => {
   });
 
   it("shows animated swipe guidance in the deck view only", () => {
-    const { rerender } = render(<PetDeck initialPets={pets} latestRun={null} initialView="deck" />);
+    const { container, rerender } = render(
+      <PetDeck initialPets={pets} latestRun={null} initialView="deck" />,
+    );
 
     expect(screen.getByText(appCopy.deck.swipeLeft)).toBeInTheDocument();
     expect(screen.getByText(appCopy.deck.swipeRight)).toBeInTheDocument();
+    expect(container.querySelectorAll(".lucide-paw-print")).toHaveLength(5);
 
     rerender(<PetDeck initialPets={pets} latestRun={null} initialView="gallery" />);
 
     expect(screen.queryByText(appCopy.deck.swipeLeft)).not.toBeInTheDocument();
     expect(screen.queryByText(appCopy.deck.swipeRight)).not.toBeInTheDocument();
+    expect(container.querySelectorAll(".lucide-paw-print")).toHaveLength(9);
   });
 
   it("shows feedback after sharing a pet from the deck card", async () => {
@@ -179,6 +185,18 @@ describe("PetDeck", () => {
     fireEvent.click(screen.getByRole("button", { name: appCopy.filters.open }));
 
     expect(screen.getByPlaceholderText(appCopy.filters.searchPlaceholder)).toBeInTheDocument();
+  });
+
+  it("uses the bio surface color for gallery attribute pills", () => {
+    render(<PetDeck initialPets={pets} latestRun={null} initialView="gallery" />);
+
+    const sizePill = screen
+      .getAllByText(
+        `${appCopy.deck.size} ${appCopy.filters.small.toLocaleLowerCase("ro-RO")}`,
+      )
+      .find((element) => element.tagName === "SPAN");
+    expect(sizePill).toBeDefined();
+    expect(sizePill).toHaveClass("bg-muted/25", "text-card-foreground", "py-1");
   });
 
   it("hides swipe guidance after the user interacts with the page", () => {
@@ -280,7 +298,11 @@ describe("PetDeck", () => {
 
     fireEvent.click(screen.getByRole("button", { name: `${appCopy.shortlist.open} 1` }));
 
-    expect(screen.getByRole("button", { name: appCopy.shortlist.remove })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: appCopy.shortlist.remove })).toHaveClass(
+      "bg-primary/10",
+      "text-primary",
+      "hover:bg-primary",
+    );
   });
 
   it("shows the pet profile name in the shortlist", () => {
