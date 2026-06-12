@@ -119,11 +119,13 @@ export function MatchDialog({ pet, onClose }: MatchDialogProps) {
               </p>
               <Dialog.Title asChild>
                 <h2 className="mt-2 text-3xl font-black text-foreground">
-                  {appCopy.match.title}
+                  {pet.profileName} {appCopy.match.title}
                 </h2>
               </Dialog.Title>
               <Dialog.Description className="mt-3 font-semibold text-muted-foreground">
-                {appCopy.match.body}
+                {pet.sex === "female"
+                  ? appCopy.match.bodyFemale
+                  : appCopy.match.body}
               </Dialog.Description>
               <AdoptionInfo
                 className="mt-5 text-center"
