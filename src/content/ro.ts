@@ -6,7 +6,7 @@ export const appCopy = {
     tagline:
       "Descoperă un cățeluș care îți poate deveni prieten pentru totdeauna.",
     sourceNotice: "Datele vin din anunțurile oficiale ale adăpostului.",
-    sourceLink: "Vezi anunțul adăpostului",
+    sourceLink: "Anunțul adăpostului",
     lastSyncPrefix: "Ultima actualizare",
     menuOpen: "Meniu",
     deckView: "Descoperă",

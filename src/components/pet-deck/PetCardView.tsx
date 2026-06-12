@@ -11,6 +11,7 @@ import { appCopy } from "@/content/ro";
 import { Pill } from "@/components/ui/badge";
 import { IconButton } from "@/components/ui/button";
 import { buildPetProfile } from "@/components/pet-deck/petProfile";
+import { SourceLinkButton } from "@/components/pet-deck/SourceLinkButton";
 import { buildPetPath } from "@/lib/pets/gallery";
 import type { PetCard } from "@/lib/pets/types";
 
@@ -168,16 +169,8 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
           ))}
         </div>
 
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-border/70 pt-4">
-          <a
-            href={pet.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="min-w-0 text-sm font-black leading-5 text-success underline-offset-4 hover:underline"
-          >
-            {appCopy.app.sourceLink}
-          </a>
-          <div className="flex shrink-0 items-center justify-end gap-2">
+        <div className="grid grid-cols-1 gap-3 border-t border-border/70 pt-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+          <div className="flex w-full shrink-0 items-center justify-between gap-2 sm:col-start-2 sm:row-start-1 sm:w-auto sm:justify-end">
             <Link
               href={buildPetPath(pet)}
               className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-secondary/35 bg-card/95 px-3 text-sm font-black text-secondary-foreground shadow-sm transition motion-safe:hover:-translate-y-0.5 hover:bg-secondary/10 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-4"
@@ -212,6 +205,10 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
               <ArrowRight className="h-7 w-7" />
             </IconButton>
           </div>
+          <SourceLinkButton
+            href={pet.sourceUrl}
+            className="mx-auto sm:col-start-1 sm:row-start-1 sm:mx-0"
+          />
         </div>
       </div>
     </motion.article>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ExternalLink, Heart, Share2 } from "lucide-react";
+import { ArrowLeft, Heart, Share2 } from "lucide-react";
 import Link from "next/link";
 import { useMotionValue } from "motion/react";
 import { useState } from "react";
@@ -8,6 +8,7 @@ import React from "react";
 
 import { appCopy } from "@/content/ro";
 import { AdoptionInfo } from "@/components/pet-deck/AdoptionInfo";
+import { SourceLinkButton } from "@/components/pet-deck/SourceLinkButton";
 import { DeckBackground } from "@/components/pet-deck/DeckBackground";
 import { buildPetProfile } from "@/components/pet-deck/petProfile";
 import { useShortlist } from "@/components/pet-deck/useShortlist";
@@ -133,15 +134,7 @@ export function PetDetailView({ pet }: PetDetailViewProps) {
                 <Button onClick={sharePet} icon={<Share2 className="h-4 w-4" />}>
                   {shareStatus ?? appCopy.gallery.share}
                 </Button>
-                <a
-                  href={pet.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-secondary/35 bg-card/95 px-4 text-sm font-black text-secondary-foreground shadow-sm transition hover:bg-secondary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  {appCopy.app.sourceLink}
-                  <ExternalLink className="h-4 w-4" />
-                </a>
+                <SourceLinkButton href={pet.sourceUrl} />
               </div>
 
               <AdoptionInfo

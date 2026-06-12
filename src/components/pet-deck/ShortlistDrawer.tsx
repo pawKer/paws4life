@@ -9,6 +9,7 @@ import { appCopy } from "@/content/ro";
 import { AdoptionInfo } from "@/components/pet-deck/AdoptionInfo";
 import { Button, IconButton } from "@/components/ui/button";
 import { buildPetProfile } from "@/components/pet-deck/petProfile";
+import { SourceLinkButton } from "@/components/pet-deck/SourceLinkButton";
 import { buildPetPath } from "@/lib/pets/gallery";
 import type { PetCard } from "@/lib/pets/types";
 
@@ -163,14 +164,7 @@ export function ShortlistDrawer({
                         <p className="mt-1 text-sm font-semibold text-muted-foreground">
                           {pet.captureLocation}
                         </p>
-                        <a
-                          href={pet.sourceUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="mt-1 inline-block text-sm font-black text-success underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        >
-                          {appCopy.app.sourceLink}
-                        </a>
+                        <SourceLinkButton href={pet.sourceUrl} className="mt-2" />
                         <Button
                           variant="danger"
                           onClick={() => onRemove(pet.id)}
