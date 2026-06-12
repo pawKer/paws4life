@@ -31,7 +31,7 @@ export const appCopy = {
     reset: "Șterge filtrele",
   },
   deck: {
-    next: "Mai descopăr",
+    next: "Următorul",
     like: "Salvează",
     verified: "Din evidența adăpostului",
     profilePhotoAction: "Vezi fotografia cățelușului",
