@@ -5,10 +5,11 @@ import Link from "next/link";
 import React from "react";
 
 import { appCopy } from "@/content/ro";
+import { AdoptionInfo } from "@/components/pet-deck/AdoptionInfo";
+import { Pill } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { buildPetProfile } from "@/components/pet-deck/petProfile";
 import {
-  buildAdoptionCtaLabel,
   buildPetPath,
   getWaitingLabel,
   getWaitingProgressPercent,
@@ -37,7 +38,7 @@ export function DogOfDaySpotlight({
 
   return (
     <section className="overflow-hidden rounded-lg border border-white/70 bg-card/90 shadow-[0_24px_70px_hsl(var(--shadow-soft)_/_0.18)] ring-1 ring-border/50 backdrop-blur-sm">
-      <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-[160px_1fr] sm:gap-4 sm:p-5">
+      <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-[240px_1fr] sm:gap-4 sm:p-5">
         <Link
           href={buildPetPath(pet)}
           className="relative block aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card sm:aspect-auto sm:min-h-40 sm:w-auto"
@@ -69,13 +70,19 @@ export function DogOfDaySpotlight({
               {profile.name}
             </Link>
           </h2>
-          <p className="mt-1 text-sm font-black text-muted-foreground">
-            {profile.age ? `${profile.age} ani - ` : ""}
-            {profile.subtitle || appCopy.gallery.dogOfDayFallback}
+          <p className="mt-2 text-xs font-black uppercase tracking-[0.08em] text-muted-foreground">
+            {appCopy.deck.registryPrefix} {pet.registryNumber}
           </p>
           <p className="mt-3 max-w-2xl text-sm font-semibold leading-6 text-card-foreground">
             {profile.description}
           </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {profile.chips.slice(0, 3).map((chip) => (
+              <Pill key={chip} tone="bio" className="py-1">
+                {chip}
+              </Pill>
+            ))}
+          </div>
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
             <div
               className="h-full rounded-full bg-primary"
@@ -89,14 +96,11 @@ export function DogOfDaySpotlight({
               .filter(Boolean)
               .join(" · ") || appCopy.gallery.dogOfDayFallback}
           </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link
-              href={buildPetPath(pet)}
-              className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-5 text-sm font-black text-primary-foreground shadow-primary transition motion-safe:hover:-translate-y-0.5 hover:bg-primary-hover motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              {buildAdoptionCtaLabel(profile.name, pet.sex)}
-            </Link>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <AdoptionInfo petName={profile.name} petSex={pet.sex} />
             <Button
+              variant={saved ? "primary" : "secondary"}
+              className="h-12"
               onClick={() => onToggleSave(pet.id)}
               icon={<Heart className={cn("h-4 w-4", saved ? "fill-current" : "")} />}
             >
