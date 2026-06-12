@@ -326,16 +326,16 @@ describe("PetDeck", () => {
     expect(screen.getByText(`${appCopy.deck.registryPrefix} 1022`)).toBeInTheDocument();
   });
 
-  it("links shortlist items to the official listing and previews thumbnails on hover", () => {
+  it("links shortlist items to profiles and the official listing and previews thumbnails", () => {
     render(<PetDeck initialPets={pets} latestRun={null} />);
 
     fireEvent.click(screen.getByRole("button", { name: appCopy.deck.like }));
     fireEvent.click(screen.getByRole("button", { name: appCopy.match.close }));
     fireEvent.click(screen.getByRole("button", { name: `${appCopy.shortlist.open} 1` }));
 
-    expect(screen.getByRole("link", { name: `${appCopy.app.sourceLink} 1022` })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: `${appCopy.gallery.meet} Bruno` })).toHaveAttribute(
       "href",
-      pets[0].sourceUrl
+      `/pets/${pets[0].id}`,
     );
     expect(screen.getByRole("link", { name: "Bruno" })).toHaveAttribute(
       "href",
@@ -346,7 +346,7 @@ describe("PetDeck", () => {
       pets[0].sourceUrl
     );
     const thumbnailLink = screen.getByRole("link", {
-      name: `${appCopy.app.sourceLink} 1022`,
+      name: `${appCopy.gallery.meet} Bruno`,
     });
     thumbnailLink.getBoundingClientRect = vi.fn(
       () =>

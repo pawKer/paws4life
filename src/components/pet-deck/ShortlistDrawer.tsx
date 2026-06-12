@@ -130,7 +130,7 @@ export function ShortlistDrawer({
                           href={`/pets/${pet.id}`}
                           target="_blank"
                           rel="noreferrer"
-                          aria-label={`${appCopy.app.sourceLink} ${pet.registryNumber}`}
+                          aria-label={`${appCopy.gallery.meet} ${profile.name}`}
                           onMouseEnter={(event) =>
                             showPreview(imageUrl, event.currentTarget)
                           }
