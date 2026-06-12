@@ -16,7 +16,7 @@ export function SourceLinkButton({ href, className }: SourceLinkButtonProps) {
       target="_blank"
       rel="noreferrer"
       className={cn(
-        "inline-flex h-11 items-center justify-center gap-2 rounded-md border border-secondary/35 bg-card/95 px-4 text-sm font-black text-secondary-foreground shadow-sm transition hover:bg-secondary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "inline-flex h-11 items-center justify-center gap-2 rounded-md border border-secondary/35 bg-card/95 px-4 text-sm font-black text-secondary-foreground shadow-sm transition motion-safe:hover:-translate-y-0.5 hover:bg-secondary/10 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         className,
       )}
     >

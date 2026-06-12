@@ -30,6 +30,7 @@ describe("PetDetailView", () => {
   it("opens adoption information in a dialog instead of expanding the detail card", () => {
     render(<PetDetailView pet={pet} />);
 
+    expect(screen.getByText(appCopy.deck.about)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Bruno/ }));
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();

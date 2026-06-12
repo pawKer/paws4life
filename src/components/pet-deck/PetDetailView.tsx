@@ -113,9 +113,14 @@ export function PetDetailView({ pet }: PetDetailViewProps) {
                 </p>
               ) : null}
 
-              <p className="mt-5 rounded-lg border border-border/70 bg-muted/25 p-4 text-base font-semibold leading-7 text-card-foreground">
-                {profile.description}
-              </p>
+              <section className="mt-5 rounded-lg border border-border/70 bg-muted/25 p-4">
+                <h2 className="text-sm font-black text-foreground">
+                  {appCopy.deck.about}
+                </h2>
+                <p className="mt-2 text-base font-semibold leading-7 text-card-foreground">
+                  {profile.description}
+                </p>
+              </section>
 
               <div className="mt-5 flex flex-wrap gap-2">
                 {profile.chips.map((chip) => (
@@ -141,7 +146,6 @@ export function PetDetailView({ pet }: PetDetailViewProps) {
                 className="mt-6"
                 petName={profile.name}
                 petSex={pet.sex}
-                mode="dialog"
               />
             </div>
           </div>

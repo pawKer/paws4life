@@ -23,14 +23,12 @@ type AdoptionInfoProps = {
   className?: string;
   petName?: string;
   petSex?: PetSex;
-  mode?: "inline" | "dialog";
 };
 
 export function AdoptionInfo({
   className,
   petName,
   petSex = "unknown",
-  mode = "inline",
 }: AdoptionInfoProps) {
   const [isOpen, setIsOpen] = useState(false);
   const panelId = useId();
@@ -38,72 +36,44 @@ export function AdoptionInfo({
     ? buildAdoptionCtaLabel(petName, petSex)
     : appCopy.adoption.cta;
 
-  if (mode === "dialog") {
-    return (
-      <div className={cn("text-left", className)}>
-        <AdoptionTrigger
-          ctaLabel={ctaLabel}
-          isOpen={isOpen}
-          panelId={panelId}
-          onClick={() => setIsOpen(true)}
-        />
-
-        <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-          <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 z-50 bg-foreground/40" />
-            <Dialog.Content
-              id={panelId}
-              className="fixed left-1/2 top-1/2 z-50 max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-lg border border-border bg-popover p-5 text-left shadow-2xl"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <Dialog.Title asChild>
-                    <h2 className="text-xl font-black text-foreground">
-                      {appCopy.adoption.title}
-                    </h2>
-                  </Dialog.Title>
-                  <Dialog.Description className="mt-1 text-sm font-semibold leading-6 text-muted-foreground">
-                    {appCopy.adoption.intro}
-                  </Dialog.Description>
-                </div>
-                <Dialog.Close
-                  aria-label={appCopy.shortlist.close}
-                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <X className="h-4 w-4" />
-                </Dialog.Close>
-              </div>
-              <AdoptionDetails />
-            </Dialog.Content>
-          </Dialog.Portal>
-        </Dialog.Root>
-      </div>
-    );
-  }
-
   return (
     <div className={cn("text-left", className)}>
       <AdoptionTrigger
         ctaLabel={ctaLabel}
         isOpen={isOpen}
         panelId={panelId}
-        onClick={() => setIsOpen((value) => !value)}
+        onClick={() => setIsOpen(true)}
       />
 
-      {isOpen ? (
-        <section
-          id={panelId}
-          className="mt-3 rounded-lg border border-border bg-card p-4 shadow-gentle"
-        >
-          <h3 className="text-base font-black text-foreground">
-            {appCopy.adoption.title}
-          </h3>
-          <p className="mt-1 text-sm font-semibold leading-6 text-muted-foreground">
-            {appCopy.adoption.intro}
-          </p>
-          <AdoptionDetails />
-        </section>
-      ) : null}
+      <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-50 bg-foreground/40" />
+          <Dialog.Content
+            id={panelId}
+            className="fixed left-1/2 top-1/2 z-50 max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-lg border border-border bg-popover p-5 text-left shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <Dialog.Title asChild>
+                  <h2 className="text-xl font-black text-foreground">
+                    {appCopy.adoption.title}
+                  </h2>
+                </Dialog.Title>
+                <Dialog.Description className="mt-1 text-sm font-semibold leading-6 text-muted-foreground">
+                  {appCopy.adoption.intro}
+                </Dialog.Description>
+              </div>
+              <Dialog.Close
+                aria-label={appCopy.shortlist.close}
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <X className="h-4 w-4" />
+              </Dialog.Close>
+            </div>
+            <AdoptionDetails />
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 }

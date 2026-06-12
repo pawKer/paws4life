@@ -156,7 +156,7 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
           <h3 className="text-sm font-black text-foreground">
             {appCopy.deck.about}
           </h3>
-          <p className="mt-2 text-base font-bold leading-6 text-card-foreground">
+          <p className="mt-2 text-base font-semibold leading-7 text-card-foreground">
             {profile.description}
           </p>
         </section>
