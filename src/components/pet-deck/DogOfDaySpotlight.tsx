@@ -37,10 +37,10 @@ export function DogOfDaySpotlight({
 
   return (
     <section className="overflow-hidden rounded-lg border border-white/70 bg-card/90 shadow-[0_24px_70px_hsl(var(--shadow-soft)_/_0.18)] ring-1 ring-border/50 backdrop-blur-sm">
-      <div className="grid grid-cols-[92px_1fr] gap-3 p-4 sm:grid-cols-[160px_1fr] sm:gap-4 sm:p-5">
+      <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-[160px_1fr] sm:gap-4 sm:p-5">
         <Link
           href={buildPetPath(pet)}
-          className="relative block aspect-square overflow-hidden rounded-lg bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card sm:aspect-auto sm:min-h-40"
+          className="relative block aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card sm:aspect-auto sm:min-h-40 sm:w-auto"
         >
           {pet.imageUrl ? (
             <img
