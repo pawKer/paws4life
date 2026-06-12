@@ -16,6 +16,7 @@ Refresh the Romanian interface copy so Paws for Life feels affectionate, natural
 
 - Rename the deck navigation label from `Deck` to `Descoperă`.
 - Rename `Lista scurtă` to `Cățeluși preferați` and adjust related saved-list messages naturally.
+- Use `Mai caut puțin` for removing a pet from favorites; it keeps the action warm and centers the user's continued search instead of rejecting the pet.
 - Keep `Cunoaște` as the gallery profile action.
 - Replace dating-app language such as `E potrivire!` with an affectionate response such as `Ți-a cucerit inima!`.
 - Prefer humane browsing labels such as `Sosiți recent` where the source meaning permits it.
