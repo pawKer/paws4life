@@ -168,19 +168,19 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
           ))}
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-border/70 pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-border/70 pt-4">
           <a
             href={pet.sourceUrl}
             target="_blank"
             rel="noreferrer"
-            className="text-sm font-black text-success underline-offset-4 hover:underline"
+            className="min-w-0 text-sm font-black leading-5 text-success underline-offset-4 hover:underline"
           >
             {appCopy.app.sourceLink}
           </a>
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex shrink-0 items-center justify-end gap-2">
             <Link
               href={buildPetPath(pet)}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-secondary/35 bg-card/95 px-4 text-sm font-black text-secondary-foreground shadow-sm transition motion-safe:hover:-translate-y-0.5 hover:bg-secondary/10 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-secondary/35 bg-card/95 px-3 text-sm font-black text-secondary-foreground shadow-sm transition motion-safe:hover:-translate-y-0.5 hover:bg-secondary/10 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:px-4"
             >
               <UserRound className="h-4 w-4" />
               {appCopy.deck.profile}

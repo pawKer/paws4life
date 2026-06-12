@@ -134,3 +134,6 @@ select {
     animation: none;
   }
 }
+a[href^="/pets/"].inline-flex {
+  font-size: 0.8125rem;
+}

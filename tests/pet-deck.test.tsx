@@ -128,7 +128,9 @@ describe("PetDeck", () => {
 
     expect(screen.getByRole("heading", { name: /Bruno, 3/ })).toBeInTheDocument();
     expect(screen.getByText(appCopy.deck.about)).toBeInTheDocument();
-    expect(screen.getByText(`${appCopy.deck.size}: ${appCopy.filters.small}`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`${appCopy.deck.size} ${appCopy.filters.small.toLocaleLowerCase("ro-RO")}`)
+    ).toBeInTheDocument();
     expect(screen.getByText(`${appCopy.deck.color}: negru-maro`)).toBeInTheDocument();
     expect(screen.getByText(appCopy.deck.lookingFor)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: appCopy.deck.profile })).toHaveAttribute(

@@ -1,32 +1,17 @@
 import { appCopy } from "@/content/ro";
+import { getPetProfileName } from "@/lib/pets/profile-name";
 import type { LatestSync, PetCard, PetSex, PetSize } from "@/lib/pets/types";
 
-const generatedPetNames = [
-  "Luna",
-  "Milo",
-  "Nala",
-  "Toby",
-  "Maya",
-  "Bruno",
-  "Kira",
-  "Max",
-  "Bella",
-  "Rex",
-  "Dora",
-  "Oscar",
-];
-
 const generatedPersonalityLines = [
-  "Imi plac plimbarile linistite si oamenii care au rabdare sa ma cunoasca.",
-  "Sunt gata sa transform o zi obisnuita intr-una cu mai mult chef de joaca.",
-  "Caut un om bun, o lesa comoda si un colt numai al meu acasa.",
-  "Am energie buna, ochi curiosi si chef sa invat rutina unei familii.",
+  "Îmi plac plimbările liniștite și oamenii care îmi dau timp să-i cunosc.",
+  "Sunt gata să aduc mai mult chef de joacă în fiecare zi.",
+  "Caut un om bun, o lesă comodă și un colțișor al meu acasă.",
+  "Am poftă de viață, ochi curioși și abia aștept să învăț rutina unei familii.",
 ];
 
 export function buildPetProfile(pet: PetCard) {
   const seed = numericSeed(pet.registryNumber || pet.id);
-  const name =
-    pet.profileName ?? generatedPetNames[seed % generatedPetNames.length];
+  const name = getPetProfileName(pet);
   const age = pet.approximateAge?.match(/\d+/)?.[0] ?? null;
   const subtitle = [sexLabel(pet.sex), pet.captureLocation]
     .filter(Boolean)
@@ -39,7 +24,7 @@ export function buildPetProfile(pet: PetCard) {
   const description = pet.profileBio ?? fallbackDescription;
   const chips = [
     pet.approximateAge,
-    `${appCopy.deck.size}: ${sizeLabel(pet.size)}`,
+    `${appCopy.deck.size} ${sizeLabel(pet.size).toLocaleLowerCase("ro-RO")}`,
     `${appCopy.deck.sex}: ${sexLabel(pet.sex)}`,
     pet.color ? `${appCopy.deck.color}: ${pet.color}` : null,
     pet.captureDateText

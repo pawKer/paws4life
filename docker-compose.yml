@@ -9,7 +9,7 @@ services:
       SYNC_CRON: ${SYNC_CRON:-0 7 * * *}
       SYNC_TIMEZONE: ${SYNC_TIMEZONE:-Europe/Bucharest}
     volumes:
-      - paws_data:/data
+      - ${PAWS_DATA_PATH:-}:/data
 
   web:
     build: .
@@ -23,10 +23,10 @@ services:
       SYNC_CRON: ${SYNC_CRON:-0 7 * * *}
       SYNC_TIMEZONE: ${SYNC_TIMEZONE:-Europe/Bucharest}
     ports:
-      - "3000:3000"
+      - "3070:3000"
     restart: unless-stopped
     volumes:
-      - paws_data:/data
+      - ${PAWS_DATA_PATH:-}:/data
 
   sync:
     build: .
@@ -45,25 +45,19 @@ services:
       PROFILE_BATCH_SIZE: ${PROFILE_BATCH_SIZE:-50}
     restart: unless-stopped
     volumes:
-      - paws_data:/data
+      - ${PAWS_DATA_PATH:-}:/data
 
   prisma-studio:
     build: .
     command: npx prisma studio --hostname 0.0.0.0 --port 5555
     ports:
-      - "${PRISMA_STUDIO_PORT:-3077}:5555"
+      - "3077:5555"
+    environment:
+      DATABASE_URL: file:/data/app.db
     env_file:
       - .env
     volumes:
-      - paws_data:/app/data
+      - ${PAWS_DATA_PATH:-}:/data
     profiles:
       - tools
     restart: unless-stopped
-
-volumes:
-  paws_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PAWS_DATA_PATH:-}

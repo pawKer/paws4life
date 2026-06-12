@@ -20,9 +20,9 @@ import { cn } from "@/lib/ui/classNames";
 const mobileBatchSize = 6;
 
 const quickFilters: Array<{ value: QuickFilter; label: string }> = [
-  { value: "small", label: appCopy.filters.small },
-  { value: "medium", label: appCopy.filters.medium },
-  { value: "large", label: appCopy.filters.large },
+  { value: "small", label: `${appCopy.deck.size} ${appCopy.filters.small.toLocaleLowerCase("ro-RO")}` },
+  { value: "medium", label: `${appCopy.deck.size} ${appCopy.filters.medium.toLocaleLowerCase("ro-RO")}` },
+  { value: "large", label: `${appCopy.deck.size} ${appCopy.filters.large.toLocaleLowerCase("ro-RO")}` },
   { value: "young", label: appCopy.gallery.young },
   { value: "adult", label: appCopy.gallery.adult },
   { value: "senior", label: appCopy.gallery.senior },

@@ -1,3 +1,5 @@
+import { getPetProfileName } from "@/lib/pets/profile-name";
+
 export type PetFilterInput = {
   sex?: string | null;
   size?: string | null;
@@ -5,9 +7,11 @@ export type PetFilterInput = {
 };
 
 export type FilterablePet = {
+  id: string;
   sex?: string | null;
   size?: string | null;
   registryNumber?: string | null;
+  profileName?: string | null;
   captureLocation?: string | null;
   approximateAge?: string | null;
   color?: string | null;
@@ -36,6 +40,7 @@ export function filterPetCards<TPet extends FilterablePet>(
     }
 
     const searchableText = normalizeSearchText([
+      getPetProfileName(pet),
       pet.registryNumber,
       pet.captureLocation,
       pet.approximateAge,

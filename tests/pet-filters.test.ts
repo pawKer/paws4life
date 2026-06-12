@@ -39,4 +39,11 @@ describe("pet filters", () => {
   it("treats empty filters as all pets", () => {
     expect(filterPetCards(pets, { sex: "all", size: "all", q: "" })).toHaveLength(2);
   });
+
+  it("searches the names shown on pet profiles", () => {
+    expect(filterPetCards(pets, { q: "Bruno" })).toHaveLength(1);
+    expect(
+      filterPetCards([{ ...pets[0], profileName: "Maya" }], { q: "maya" }),
+    ).toHaveLength(1);
+  });
 });

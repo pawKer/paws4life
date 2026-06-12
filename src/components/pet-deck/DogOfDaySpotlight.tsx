@@ -8,6 +8,7 @@ import { appCopy } from "@/content/ro";
 import { Button } from "@/components/ui/button";
 import { buildPetProfile } from "@/components/pet-deck/petProfile";
 import {
+  buildAdoptionCtaLabel,
   buildPetPath,
   getWaitingLabel,
   getWaitingProgressPercent,
@@ -93,7 +94,7 @@ export function DogOfDaySpotlight({
               href={buildPetPath(pet)}
               className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-5 text-sm font-black text-primary-foreground shadow-primary transition motion-safe:hover:-translate-y-0.5 hover:bg-primary-hover motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              {appCopy.gallery.meet} {profile.name}
+              {buildAdoptionCtaLabel(profile.name, pet.sex)}
             </Link>
             <Button
               onClick={() => onToggleSave(pet.id)}

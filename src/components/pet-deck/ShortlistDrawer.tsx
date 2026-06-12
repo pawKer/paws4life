@@ -1,7 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { Trash2, X } from "lucide-react";
+import { HeartMinus as Trash2, X } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 
@@ -118,9 +118,9 @@ export function ShortlistDrawer({
                     <div className="flex gap-3">
                       {imageUrl ? (
                         <a
-                          href={pet.sourceUrl}
-                          target="_blank"
-                          rel="noreferrer"
+           target="_blank"
+           rel="noreferrer"
+            href={`/pets/${pet.id}`}
                           aria-label={`${appCopy.app.sourceLink} ${pet.registryNumber}`}
                           onMouseEnter={(event) =>
                             showPreview(imageUrl, event.currentTarget)
