@@ -25,10 +25,12 @@ Style:
 Name rules:
 - Pick a short, friendly pet name that works naturally in Romanian (it can be an international name).
 - Match the provided sex when it is clear.
+- Do not choose a name listed in usedNames.
 - Avoid duplicate names inside the same batch when possible.
 - Try using common pet names
 
 Write the name and bio in Romanian.
+Input is JSON with usedNames and pets.
 Return ONLY valid JSON matching this shape:
 {"profiles":[{"id":"pet-id","name":"Maya","bio":"..."}]}
 Preserve each input id exactly and include one profile for every input pet.`;
@@ -41,6 +43,7 @@ export type PetProfileCandidate = {
   color: string | null;
   captureLocation: string | null;
   characteristics: string | null;
+  profileName?: string | null;
 };
 
 export type GeneratedPetProfile = {
@@ -49,11 +52,14 @@ export type GeneratedPetProfile = {
   bio: string;
 };
 
+export type ProfileNameMode = "replace" | "keep";
+
 type GeneratePetProfilesOptions = {
   apiKey?: string;
   model?: string;
   responsesUrl?: string;
   request?: typeof fetch;
+  usedNames?: string[];
   logIo?: boolean;
   logger?: Pick<Console, "info">;
 };
@@ -62,6 +68,7 @@ type EnrichPetProfilesOptions = GeneratePetProfilesOptions & {
   db: PrismaClient;
   pets: PetProfileCandidate[];
   batchSize?: number;
+  nameMode?: ProfileNameMode;
   now?: () => Date;
 };
 
@@ -113,20 +120,26 @@ export async function enrichPetProfiles({
   db,
   pets,
   batchSize = getProfileBatchSize(),
+  nameMode = "replace",
   now = () => new Date(),
   apiKey = process.env.OPENAI_API_KEY,
   model = process.env.OPENAI_MODEL ?? defaultProfileModel,
   responsesUrl = process.env.OPENAI_RESPONSES_URL ?? openAiResponsesUrl,
   request,
+  usedNames = [],
   logIo = isProfileIoLoggingEnabled(),
   logger = console,
 }: EnrichPetProfilesOptions): Promise<PetProfileEnrichmentSummary> {
+  const runUsedNames = createUsedNameTracker(usedNames);
+
   if (logIo) {
     logger.info("OpenAI profile enrichment candidates", {
       count: pets.length,
       batchSize: normalizeBatchSize(batchSize),
       model,
       hasApiKey: Boolean(apiKey),
+      nameMode,
+      usedNames: runUsedNames.values,
     });
   }
 
@@ -161,10 +174,12 @@ export async function enrichPetProfiles({
         model,
         responsesUrl,
         request,
+        usedNames: runUsedNames.values,
         logIo,
         logger,
       });
       const batchIds = new Set(batch.map((pet) => pet.id));
+      const batchPetsById = new Map(batch.map((pet) => [pet.id, pet] as const));
       const generatedIds = new Set<string>();
 
       for (const profile of generatedProfiles) {
@@ -176,15 +191,26 @@ export async function enrichPetProfiles({
         }
 
         generatedIds.add(profile.id);
+        const pet = batchPetsById.get(profile.id);
+        const shouldKeepName =
+          nameMode === "keep" && Boolean(pet?.profileName?.trim());
+        const acceptedName = shouldKeepName ? pet?.profileName : profile.name;
+        const profileNameData = shouldKeepName
+          ? {}
+          : {
+              profileName: profile.name,
+            };
+
         await db.pet.update({
           where: { id: profile.id },
           data: {
-            profileName: profile.name,
+            ...profileNameData,
             profileBio: profile.bio,
             profileGeneratedAt: now(),
             profileModel: model,
           },
         });
+        runUsedNames.add(acceptedName);
         updatedCount += 1;
       }
 
@@ -217,6 +243,7 @@ export async function generatePetProfiles(
     model = process.env.OPENAI_MODEL ?? defaultProfileModel,
     responsesUrl = process.env.OPENAI_RESPONSES_URL ?? openAiResponsesUrl,
     request = fetch,
+    usedNames = [],
     logIo = isProfileIoLoggingEnabled(),
     logger = console,
   }: GeneratePetProfilesOptions = {},
@@ -226,12 +253,16 @@ export async function generatePetProfiles(
   }
 
   const profileInputs = toProfileInputs(pets);
+  const input = {
+    usedNames: normalizeUsedNames(usedNames),
+    pets: profileInputs,
+  };
 
   if (logIo) {
     logger.info("OpenAI profile generation input", {
       model,
       count: profileInputs.length,
-      pets: profileInputs,
+      input,
     });
   }
 
@@ -248,7 +279,7 @@ export async function generatePetProfiles(
       input: [
         {
           role: "user",
-          content: JSON.stringify(profileInputs),
+          content: JSON.stringify(input),
         },
       ],
       text: {
@@ -327,6 +358,38 @@ function isProfileIoLoggingEnabled(
   value = process.env.PROFILE_LOG_IO,
 ): boolean {
   return value === "1" || value?.toLowerCase() === "true";
+}
+
+function createUsedNameTracker(initialNames: string[]) {
+  const values: string[] = [];
+  const seen = new Set<string>();
+
+  function add(name: string | null | undefined) {
+    const trimmed = name?.trim();
+
+    if (!trimmed) {
+      return;
+    }
+
+    const key = trimmed.toLowerCase();
+    if (seen.has(key)) {
+      return;
+    }
+
+    seen.add(key);
+    values.push(trimmed);
+  }
+
+  initialNames.forEach(add);
+
+  return {
+    values,
+    add,
+  };
+}
+
+function normalizeUsedNames(names: string[]): string[] {
+  return createUsedNameTracker(names).values;
 }
 
 function toProfileInputs(pets: PetProfileCandidate[]) {

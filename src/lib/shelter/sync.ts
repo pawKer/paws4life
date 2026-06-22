@@ -289,6 +289,7 @@ async function performSync({
   const profileSummary = await enrichPetProfiles({
     db,
     pets: profileCandidates,
+    usedNames: getUsedProfileNames(existingPets),
     now
   });
   errors.push(...profileSummary.errors.map((error) => `profile enrichment: ${error}`));
@@ -447,6 +448,22 @@ function canSafelyMarkUnavailable({
 
 function countAvailablePets(pets: Array<{ isAvailable: boolean }>): number {
   return pets.filter((pet) => pet.isAvailable).length;
+}
+
+function getUsedProfileNames(
+  pets: Array<{ isAvailable: boolean; profileName: string | null }>
+): string[] {
+  const names = new Set<string>();
+
+  for (const pet of pets) {
+    const profileName = pet.profileName?.trim();
+
+    if (pet.isAvailable && profileName) {
+      names.add(profileName);
+    }
+  }
+
+  return Array.from(names);
 }
 
 function timeoutSignal(timeoutMs: number): AbortSignal | undefined {

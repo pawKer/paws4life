@@ -47,6 +47,29 @@ services:
     volumes:
       - ${PAWS_DATA_PATH:-}:/data
 
+  # One-shot AI profile regeneration against the current SQLite DB.
+  # Run explicitly with:
+  # docker compose --profile regenerate run --rm regenerate-profiles
+  regenerate-profiles:
+    build: .
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    command: npm run profiles:regenerate
+    environment:
+      DATABASE_URL: file:/data/app.db
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5-mini}
+      OPENAI_RESPONSES_URL: ${OPENAI_RESPONSES_URL:-https://api.openai.com/v1/responses}
+      PROFILE_BATCH_SIZE: ${PROFILE_BATCH_SIZE:-50}
+      PROFILE_LOG_IO: ${PROFILE_LOG_IO:-false}
+      PROFILE_REGENERATE_NAMES: ${PROFILE_REGENERATE_NAMES:-replace}
+      SHELTER_SLUG: ${SHELTER_SLUG:-}
+    profiles:
+      - regenerate
+    volumes:
+      - ${PAWS_DATA_PATH:-}:/data
+
   prisma-studio:
     build: .
     command: npx prisma studio --hostname 0.0.0.0 --port 5555

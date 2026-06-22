@@ -4,6 +4,7 @@ import {
   enrichPetProfiles,
   type PetProfileCandidate,
   type PetProfileEnrichmentSummary,
+  type ProfileNameMode,
 } from "@/lib/pets/profile-generator";
 import { prisma } from "@/lib/db";
 
@@ -18,6 +19,7 @@ type RegenerateAvailablePetProfilesOptions = {
   request?: typeof fetch;
   logIo?: boolean;
   logger?: Pick<Console, "info">;
+  nameMode?: ProfileNameMode;
   enrich?: typeof enrichPetProfiles;
 };
 
@@ -36,6 +38,7 @@ export async function regenerateAvailablePetProfiles({
   request,
   logIo,
   logger,
+  nameMode = getProfileRegenerationNameMode(),
   enrich = enrichPetProfiles,
 }: RegenerateAvailablePetProfilesOptions = {}): Promise<ProfileRegenerationSummary> {
   const pets = await db.pet.findMany({
@@ -62,6 +65,7 @@ export async function regenerateAvailablePetProfiles({
       color: true,
       captureLocation: true,
       characteristics: true,
+      profileName: true,
     },
   });
 
@@ -74,6 +78,8 @@ export async function regenerateAvailablePetProfiles({
     model,
     responsesUrl,
     request,
+    usedNames: nameMode === "keep" ? getExistingProfileNames(pets) : [],
+    nameMode,
     logIo,
     logger,
   });
@@ -94,6 +100,7 @@ function toProfileCandidate(
     | "color"
     | "captureLocation"
     | "characteristics"
+    | "profileName"
   >,
 ): PetProfileCandidate {
   return {
@@ -104,5 +111,21 @@ function toProfileCandidate(
     color: pet.color,
     captureLocation: pet.captureLocation,
     characteristics: pet.characteristics,
+    profileName: pet.profileName,
   };
+}
+
+function getExistingProfileNames(
+  pets: Array<{ profileName?: string | null }>,
+): string[] {
+  return pets.flatMap((pet) => {
+    const name = pet.profileName?.trim();
+    return name ? [name] : [];
+  });
+}
+
+export function getProfileRegenerationNameMode(
+  value = process.env.PROFILE_REGENERATE_NAMES,
+): ProfileNameMode {
+  return value === "keep" ? "keep" : "replace";
 }

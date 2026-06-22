@@ -43,7 +43,7 @@ Set `OPENAI_API_KEY` to generate profile names and bios after sync. Tune with `O
 npm run profiles:regenerate
 ```
 
-Set `SHELTER_SLUG` to regenerate one active shelter only.
+Set `SHELTER_SLUG` to regenerate one active shelter only. Set `PROFILE_REGENERATE_NAMES=keep` to refresh bios while preserving existing names; the default `replace` mode regenerates both names and bios.
 
 ## Docker
 

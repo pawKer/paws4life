@@ -95,6 +95,21 @@ describe("shelter sync", () => {
         },
       }),
     );
+    expect(mocks.enrichPetProfiles).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pets: expect.arrayContaining([
+          expect.objectContaining({ id: "pet_101" }),
+          expect.objectContaining({ id: "pet_102" }),
+        ]),
+        usedNames: ["Old"],
+      }),
+    );
+    expect(mocks.enrichPetProfiles).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pets: [expect.objectContaining({ id: "pet_202" })],
+        usedNames: ["Old"],
+      }),
+    );
     expect(db.pet.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
