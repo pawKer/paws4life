@@ -208,6 +208,7 @@ export async function enrichPetProfiles({
             profileBio: profile.bio,
             profileGeneratedAt: now(),
             profileModel: model,
+            shareImagesGeneratedAt: null,
           },
         });
         runUsedNames.add(acceptedName);

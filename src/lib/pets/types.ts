@@ -18,6 +18,7 @@ export type PetCard = {
   characteristics: string | null;
   profileName: string | null;
   profileBio: string | null;
+  shareImagesGeneratedAt: string | null;
   isAvailable: boolean;
 };
 

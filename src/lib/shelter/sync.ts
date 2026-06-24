@@ -6,6 +6,12 @@ import {
   type PetProfileCandidate
 } from "@/lib/pets/profile-generator";
 import {
+  generateShareImagesForAvailablePets,
+  isShareImageGenerationEnabled,
+  type ShareImageGenerationSummary
+} from "@/lib/pets/share-image-generation";
+import { hasShareImageRelevantChange } from "@/lib/pets/share-images";
+import {
   readShelterConfigs,
   upsertConfiguredShelters,
   type ShelterConfig
@@ -25,6 +31,7 @@ export type SyncSummary = {
   unavailableCount: number;
   profileEnrichedCount: number;
   errors: string[];
+  shareImages?: ShareImageGenerationSummary;
   shelters?: ShelterSyncSummary[];
 };
 
@@ -42,6 +49,8 @@ type SyncOptions = {
   shelterSlug?: string;
   requestDelayMs?: number;
   now?: () => Date;
+  shareImagesOnSync?: boolean;
+  generateShareImages?: typeof generateShareImagesForAvailablePets;
 };
 
 const fetchTimeoutMs = 30_000;
@@ -75,18 +84,32 @@ export async function syncShelterPets(options: SyncOptions = {}): Promise<SyncSu
   }
 
   const summaries: ShelterSyncSummary[] = [];
+  const now = options.now ?? (() => new Date());
 
   for (const shelter of shelters) {
     const summary = await syncOneShelter({
       db,
       shelter,
       requestDelayMs: options.requestDelayMs ?? 250,
-      now: options.now ?? (() => new Date())
+      now
     });
     summaries.push(summary);
   }
 
-  return aggregateShelterSummaries(summaries);
+  const summary = aggregateShelterSummaries(summaries);
+  const shouldGenerateShareImages =
+    options.shareImagesOnSync ?? isShareImageGenerationEnabled();
+
+  if (!shouldGenerateShareImages || summary.status === "failed") {
+    return summary;
+  }
+
+  const shareImages = await (options.generateShareImages ?? generateShareImagesForAvailablePets)({
+    db,
+    now
+  });
+
+  return withShareImageSummary(summary, shareImages);
 }
 
 async function syncOneShelter({
@@ -198,9 +221,19 @@ async function performSync({
     },
     select: {
       sourceUrl: true,
+      id: true,
+      registryNumber: true,
+      imageUrl: true,
+      captureLocation: true,
+      approximateAge: true,
+      sex: true,
+      size: true,
+      color: true,
+      characteristics: true,
       isAvailable: true,
       profileName: true,
-      profileBio: true
+      profileBio: true,
+      shareImagesGeneratedAt: true
     }
   });
   const existingPetsBySourceUrl = new Map(
@@ -221,6 +254,23 @@ async function performSync({
       const html = await fetchText(listing.url);
       const parsed = parseListingPage(html, listing.url, listing.lastModified);
       const existingPet = existingPetsBySourceUrl.get(parsed.sourceUrl);
+      const seenAt = now();
+      const writeData = toPetWriteData(parsed, shelterId, seenAt);
+      const shouldInvalidateShareImages =
+        existingPet &&
+        existingPet.shareImagesGeneratedAt &&
+        hasShareImageRelevantChange(existingPet, {
+          registryNumber: writeData.registryNumber,
+          imageUrl: writeData.imageUrl ?? null,
+          captureLocation: writeData.captureLocation ?? null,
+          approximateAge: writeData.approximateAge ?? null,
+          sex: writeData.sex ?? null,
+          size: writeData.size ?? null,
+          color: writeData.color ?? null,
+          characteristics: writeData.characteristics ?? null,
+          profileName: existingPet.profileName,
+          profileBio: existingPet.profileBio
+        });
 
       const pet = await db.pet.upsert({
         where: {
@@ -230,13 +280,14 @@ async function performSync({
           }
         },
         create: {
-          ...toPetWriteData(parsed, shelterId, now()),
-          firstSeenAt: now()
+          ...writeData,
+          firstSeenAt: seenAt
         },
         update: {
-          ...toPetWriteData(parsed, shelterId, now()),
+          ...writeData,
           isAvailable: true,
-          unavailableSince: null
+          unavailableSince: null,
+          ...(shouldInvalidateShareImages ? { shareImagesGeneratedAt: null } : {})
         },
         select: {
           id: true,
@@ -280,7 +331,8 @@ async function performSync({
       },
       data: {
         isAvailable: false,
-        unavailableSince: now()
+        unavailableSince: now(),
+        shareImagesGeneratedAt: null
       }
     });
     unavailableCount = availabilityPlan.markUnavailable.length;
@@ -403,6 +455,28 @@ function aggregateShelterSummaries(shelters: ShelterSyncSummary[]): SyncSummary 
     ),
     errors,
     shelters
+  };
+}
+
+function withShareImageSummary(
+  summary: SyncSummary,
+  shareImages: ShareImageGenerationSummary
+): SyncSummary {
+  const errors = [
+    ...summary.errors,
+    ...shareImages.errors.map((error) => `share images: ${error}`)
+  ];
+
+  return {
+    ...summary,
+    status:
+      summary.status === "failed"
+        ? "failed"
+        : errors.length > 0
+          ? "partial"
+          : summary.status,
+    errors,
+    shareImages
   };
 }
 

@@ -24,6 +24,7 @@ const pet: PetCard = {
   characteristics: "Talie mica, culoare negru-maro.",
   profileName: "Bruno",
   profileBio: null,
+  shareImagesGeneratedAt: "2026-06-10T00:00:00.000Z",
   isAvailable: true,
 };
 

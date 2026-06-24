@@ -27,6 +27,7 @@ model Pet {
   profileBio         String?
   profileGeneratedAt DateTime?
   profileModel       String?
+  shareImagesGeneratedAt DateTime?
   isAvailable        Boolean   @default(true)
   unavailableSince   DateTime?
   sourceLastModified DateTime?

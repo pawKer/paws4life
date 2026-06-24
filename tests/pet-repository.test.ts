@@ -51,6 +51,7 @@ describe("pet repository", () => {
         characteristics: "Talie mijlocie, culoare maro.",
         profileName: "Rex",
         profileBio: "Rex cauta o familie.",
+        shareImagesGeneratedAt: new Date("2026-06-02T00:00:00.000Z"),
         isAvailable: true,
         unavailableSince: null,
         sourceLastModified: null,
@@ -82,6 +83,7 @@ describe("pet repository", () => {
       id: "pet_1",
       registryNumber: "931",
       profileName: "Rex",
+      shareImagesGeneratedAt: "2026-06-02T00:00:00.000Z",
       captureDate: "2026-05-20T00:00:00.000Z",
       firstSeenAt: "2026-06-01T00:00:00.000Z",
     });

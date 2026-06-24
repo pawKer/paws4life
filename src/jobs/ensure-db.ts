@@ -39,6 +39,7 @@ async function ensureDatabase() {
       "profileBio" TEXT,
       "profileGeneratedAt" DATETIME,
       "profileModel" TEXT,
+      "shareImagesGeneratedAt" DATETIME,
       "isAvailable" BOOLEAN NOT NULL DEFAULT true,
       "unavailableSince" DATETIME,
       "sourceLastModified" DATETIME,
@@ -82,7 +83,8 @@ async function ensureDatabase() {
     ["profileName", "TEXT"],
     ["profileBio", "TEXT"],
     ["profileGeneratedAt", "DATETIME"],
-    ["profileModel", "TEXT"]
+    ["profileModel", "TEXT"],
+    ["shareImagesGeneratedAt", "DATETIME"]
   ] as const) {
     await addColumnIfMissing("Pet", column, type);
   }
@@ -164,6 +166,7 @@ async function rebuildPetTable(defaultShelterId: string) {
       "profileBio" TEXT,
       "profileGeneratedAt" DATETIME,
       "profileModel" TEXT,
+      "shareImagesGeneratedAt" DATETIME,
       "isAvailable" BOOLEAN NOT NULL DEFAULT true,
       "unavailableSince" DATETIME,
       "sourceLastModified" DATETIME,
@@ -196,6 +199,7 @@ async function rebuildPetTable(defaultShelterId: string) {
       "profileBio",
       "profileGeneratedAt",
       "profileModel",
+      "shareImagesGeneratedAt",
       "isAvailable",
       "unavailableSince",
       "sourceLastModified",
@@ -225,6 +229,7 @@ async function rebuildPetTable(defaultShelterId: string) {
       "profileBio",
       "profileGeneratedAt",
       "profileModel",
+      "shareImagesGeneratedAt",
       "isAvailable",
       "unavailableSince",
       "sourceLastModified",

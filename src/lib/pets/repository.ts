@@ -103,6 +103,7 @@ export function toPetCard(pet: Pet): PetCard {
     characteristics: pet.characteristics,
     profileName: pet.profileName,
     profileBio: pet.profileBio,
+    shareImagesGeneratedAt: pet.shareImagesGeneratedAt?.toISOString() ?? null,
     isAvailable: pet.isAvailable
   };
 }

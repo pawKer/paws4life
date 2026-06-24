@@ -1,16 +1,16 @@
 "use client";
 
-import { ArrowRight, BadgeCheck, Heart, Share2, UserRound } from "lucide-react";
+import { ArrowRight, BadgeCheck, Heart, UserRound } from "lucide-react";
 import { motion, useReducedMotion, useTransform } from "motion/react";
 import type { MotionValue } from "motion/react";
 import Link from "next/link";
-import { useState } from "react";
 import React from "react";
 
 import { appCopy } from "@/content/ro";
 import { Pill } from "@/components/ui/badge";
 import { IconButton } from "@/components/ui/button";
 import { buildPetProfile } from "@/components/pet-deck/petProfile";
+import { SharePetImageButton } from "@/components/pet-deck/SharePetImageButton";
 import { SourceLinkButton } from "@/components/pet-deck/SourceLinkButton";
 import { buildPetPath } from "@/lib/pets/gallery";
 import type { PetCard } from "@/lib/pets/types";
@@ -24,7 +24,6 @@ type PetCardViewProps = {
 
 export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
   const profile = buildPetProfile(pet);
-  const [shareStatus, setShareStatus] = useState<string | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const rotate = useTransform(dragX, [-220, 0, 220], [-9, 0, 9]);
   const likeOpacity = useTransform(dragX, [36, 130], [0, 1]);
@@ -32,34 +31,6 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
 
   function resetDrag() {
     dragX.set(0);
-  }
-
-  async function sharePet() {
-    const path = buildPetPath(pet);
-    const url = `${window.location.origin}${path}`;
-    const title = `${profile.name} - ${appCopy.app.name}`;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({ title, url });
-        setShareStatus(appCopy.gallery.shareDone);
-        window.setTimeout(() => setShareStatus(null), 2200);
-        return;
-      }
-
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(url);
-        setShareStatus(appCopy.gallery.copied);
-        window.setTimeout(() => setShareStatus(null), 2200);
-        return;
-      }
-
-      setShareStatus(appCopy.gallery.shareUnavailable);
-      window.setTimeout(() => setShareStatus(null), 2200);
-    } catch {
-      setShareStatus(appCopy.gallery.shareUnavailable);
-      window.setTimeout(() => setShareStatus(null), 2200);
-    }
   }
 
   return (
@@ -178,24 +149,7 @@ export function PetCardView({ pet, dragX, onLike, onNext }: PetCardViewProps) {
               <UserRound className="h-4 w-4" />
               {appCopy.deck.profile}
             </Link>
-            <div className="relative">
-              {shareStatus ? (
-                <span
-                  role="status"
-                  className="absolute bottom-[calc(100%+0.45rem)] right-0 z-20 whitespace-nowrap rounded-full border border-white/70 bg-foreground px-3 py-1 text-xs font-black text-background shadow-gentle ring-1 ring-border/45"
-                >
-                  {shareStatus}
-                </span>
-              ) : null}
-              <IconButton
-                label={shareStatus ?? appCopy.gallery.share}
-                onClick={sharePet}
-                tone="secondary"
-                className="h-11 w-11"
-              >
-                <Share2 className="h-5 w-5" />
-              </IconButton>
-            </div>
+            <SharePetImageButton pet={pet} className="h-11 w-11" />
             <IconButton
               label={appCopy.deck.next}
               onClick={onNext}

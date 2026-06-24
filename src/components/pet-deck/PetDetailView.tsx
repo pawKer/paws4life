@@ -1,9 +1,8 @@
 "use client";
 
-import { ArrowLeft, Heart, Share2 } from "lucide-react";
+import { ArrowLeft, Heart } from "lucide-react";
 import Link from "next/link";
 import { useMotionValue } from "motion/react";
-import { useState } from "react";
 import React from "react";
 
 import { appCopy } from "@/content/ro";
@@ -11,6 +10,7 @@ import { AdoptionInfo } from "@/components/pet-deck/AdoptionInfo";
 import { SourceLinkButton } from "@/components/pet-deck/SourceLinkButton";
 import { DeckBackground } from "@/components/pet-deck/DeckBackground";
 import { buildPetProfile } from "@/components/pet-deck/petProfile";
+import { SharePetImageButton } from "@/components/pet-deck/SharePetImageButton";
 import { useShortlist } from "@/components/pet-deck/useShortlist";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/ui/badge";
@@ -25,24 +25,7 @@ export function PetDetailView({ pet }: PetDetailViewProps) {
   const backgroundX = useMotionValue(0);
   const profile = buildPetProfile(pet);
   const { toggleShortlist, isShortlisted } = useShortlist([pet]);
-  const [shareStatus, setShareStatus] = useState<string | null>(null);
   const saved = isShortlisted(pet.id);
-
-  async function sharePet() {
-    const url = window.location.href;
-    const title = `${profile.name} - ${appCopy.app.name}`;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({ title, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        setShareStatus(appCopy.gallery.copied);
-      }
-    } catch {
-      setShareStatus(null);
-    }
-  }
 
   return (
     <main className="relative min-h-dvh overflow-x-hidden bg-background text-foreground">
@@ -138,9 +121,7 @@ export function PetDetailView({ pet }: PetDetailViewProps) {
                 >
                   {saved ? appCopy.gallery.saved : appCopy.gallery.save}
                 </Button>
-                <Button onClick={sharePet} icon={<Share2 className="h-4 w-4" />}>
-                  {shareStatus ?? appCopy.gallery.share}
-                </Button>
+                <SharePetImageButton kind="button" pet={pet} />
                 <SourceLinkButton href={pet.sourceUrl} />
               </div>
 

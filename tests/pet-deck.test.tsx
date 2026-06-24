@@ -28,6 +28,7 @@ const pets: PetCard[] = [
     characteristics: "Talie mică, culoare negru-maro.",
     profileName: null,
     profileBio: null,
+    shareImagesGeneratedAt: "2026-06-10T00:00:00.000Z",
     isAvailable: true
   },
   {
@@ -47,6 +48,7 @@ const pets: PetCard[] = [
     characteristics: "Talie mijlocie, culoare maro.",
     profileName: null,
     profileBio: null,
+    shareImagesGeneratedAt: "2026-06-10T00:00:00.000Z",
     isAvailable: true
   }
 ];
@@ -158,7 +160,7 @@ describe("PetDeck", () => {
     expect(container.querySelectorAll(".lucide-paw-print")).toHaveLength(9);
   });
 
-  it("shows feedback after sharing a pet from the deck card", async () => {
+  it("shares a pet link from the deck card chooser", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(window.navigator, "clipboard", {
       configurable: true,
@@ -172,6 +174,7 @@ describe("PetDeck", () => {
     render(<PetDeck initialPets={pets} latestRun={null} />);
 
     fireEvent.click(screen.getByRole("button", { name: appCopy.gallery.share }));
+    fireEvent.click(screen.getByRole("button", { name: appCopy.gallery.shareLink }));
 
     expect(writeText).toHaveBeenCalledWith(expect.stringContaining(`/pets/${pets[0].id}`));
     expect(await screen.findByText(appCopy.gallery.copied)).toBeInTheDocument();

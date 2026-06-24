@@ -54,6 +54,7 @@ describe("shelter sync", () => {
           isDefault: false,
         },
       ],
+      shareImagesOnSync: false,
     });
 
     expect(summary).toMatchObject({
@@ -209,6 +210,7 @@ describe("shelter sync", () => {
           isDefault: true,
         },
       ],
+      shareImagesOnSync: false,
     });
 
     expect(summary).toMatchObject({
@@ -220,16 +222,131 @@ describe("shelter sync", () => {
     expect(summary.errors[0]).toContain("Skipped unavailable reconciliation");
     expect(db.pet.updateMany).not.toHaveBeenCalled();
   });
+
+  it("clears generated share image state when render-relevant pet data changes", async () => {
+    const db = createSyncDb({
+      existingPets: [
+        {
+          id: "pet_999",
+          sourceUrl: "https://first.example/anunturi-caini/999/",
+          registryNumber: "999",
+          imageUrl: "https://example.com/old-999.jpg",
+          captureLocation: "Cartier Test",
+          approximateAge: "3-4 ani",
+          sex: "male",
+          size: "medium",
+          color: "maro",
+          characteristics: "Talie mijlocie, culoare maro.",
+          profileName: "Old",
+          profileBio: "Old bio",
+          shareImagesGeneratedAt: new Date("2026-06-10T00:00:00.000Z"),
+          isAvailable: true,
+        },
+      ],
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string | URL | Request) => {
+        const response = collapseResponses.get(String(url));
+
+        if (!response) {
+          return new Response("missing", { status: 404 });
+        }
+
+        return new Response(response, { status: 200 });
+      }),
+    );
+
+    const { syncShelterPets } = await import("@/lib/shelter/sync");
+    await syncShelterPets({
+      db,
+      requestDelayMs: 0,
+      shareImagesOnSync: false,
+      shelterConfigs: [
+        {
+          slug: "first-shelter",
+          name: "First Shelter",
+          sitemapIndexUrl: "https://first.example/sitemap_index.xml",
+          isActive: true,
+          isDefault: true,
+        },
+      ],
+    });
+
+    expect(db.pet.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: expect.objectContaining({
+          shareImagesGeneratedAt: null,
+        }),
+      }),
+    );
+  });
+
+  it("reports post-sync share image errors as a partial sync", async () => {
+    const db = createSyncDb();
+    const generateShareImages = vi.fn(async () => ({
+      generatedCount: 0,
+      skippedCount: 0,
+      deletedCount: 0,
+      errors: ["1022: browser failed"],
+    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string | URL | Request) => {
+        const response = collapseResponses.get(String(url));
+
+        if (!response) {
+          return new Response("missing", { status: 404 });
+        }
+
+        return new Response(response, { status: 200 });
+      }),
+    );
+
+    const { syncShelterPets } = await import("@/lib/shelter/sync");
+    const summary = await syncShelterPets({
+      db,
+      requestDelayMs: 0,
+      generateShareImages,
+      shelterConfigs: [
+        {
+          slug: "first-shelter",
+          name: "First Shelter",
+          sitemapIndexUrl: "https://first.example/sitemap_index.xml",
+          isActive: true,
+          isDefault: true,
+        },
+      ],
+    });
+
+    expect(generateShareImages).toHaveBeenCalledWith(
+      expect.objectContaining({
+        db,
+      }),
+    );
+    expect(summary.status).toBe("partial");
+    expect(summary.errors).toContain("share images: 1022: browser failed");
+  });
 });
 
 function createSyncDb({
   existingPets,
 }: {
   existingPets?: Array<{
+    id?: string;
     sourceUrl: string;
+    registryNumber?: string;
+    imageUrl?: string | null;
+    captureLocation?: string | null;
+    approximateAge?: string | null;
+    sex?: string | null;
+    size?: string | null;
+    color?: string | null;
+    characteristics?: string | null;
     isAvailable: boolean;
     profileName: string | null;
     profileBio: string | null;
+    shareImagesGeneratedAt?: Date | null;
   }>;
 } = {}) {
   const shelters = new Map<string, { id: string; slug: string; name: string; sitemapIndexUrl: string; isActive: boolean; isDefault: boolean; createdAt: Date; updatedAt: Date }>();
