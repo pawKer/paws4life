@@ -77,7 +77,7 @@ export function PetShareImageCard({
           <h1
             className={cn(
               "flex items-center font-black leading-none tracking-normal drop-shadow-[0_4px_18px_rgba(0,0,0,0.5)]",
-              isStory ? "text-[126px]" : "text-[96px]",
+              isStory ? "text-[108px]" : "text-[82px]",
             )}
           >
             {profile.name}
@@ -94,7 +94,7 @@ export function PetShareImageCard({
           <p
             className={cn(
               "mt-5 max-w-[820px] truncate font-black text-white/90",
-              isStory ? "text-4xl" : "text-3xl",
+              isStory ? "text-[34px]" : "text-[28px]",
             )}
           >
             {profile.subtitle}
@@ -124,11 +124,10 @@ export function PetShareImageCard({
               isStory ? "px-12 py-8" : "px-10 py-6",
             )}
           >
-            <PawPrint className="absolute left-9 top-8 h-12 w-12 rotate-[-18deg] text-success/35" />
             <p
               className={cn(
                 "mx-auto max-w-[820px] font-semibold leading-tight",
-                isStory ? "text-[32px]" : "text-[26px]",
+                isStory ? "text-[28px]" : "text-[23px]",
               )}
             >
               {profile.description}
@@ -156,7 +155,7 @@ export function PetShareImageCard({
               >
                 <Phone className={cn(isStory ? "h-8 w-8" : "h-7 w-7")} />
               </span>
-              <span className={cn("font-black", isStory ? "text-[40px]" : "text-[32px]")}>
+              <span className={cn("font-black", isStory ? "text-[34px]" : "text-[28px]")}>
                 {profile.adoptionCta}
               </span>
             </div>
@@ -169,7 +168,7 @@ export function PetShareImageCard({
               <div
                 className={cn(
                   "font-black leading-none text-success",
-                  isStory ? "text-[56px]" : "text-[44px]",
+                  isStory ? "text-[50px]" : "text-[40px]",
                 )}
               >
                 {profile.shelterPhone}
@@ -177,7 +176,7 @@ export function PetShareImageCard({
               <div
                 className={cn(
                   "mt-4 flex items-center gap-3 font-bold text-muted-foreground",
-                  isStory ? "text-[30px]" : "text-2xl",
+                  isStory ? "text-[26px]" : "text-[22px]",
                 )}
               >
                 <MapPin className="h-7 w-7 text-success" />
@@ -264,7 +263,7 @@ function Stat({
       <span className="grid h-16 w-16 place-items-center text-success">
         {React.cloneElement(icon, { className: "h-12 w-12" })}
       </span>
-      <span className="max-w-full truncate text-center text-[28px] font-black text-card-foreground">
+      <span className="max-w-full truncate text-center text-[24px] font-black text-card-foreground">
         {label}
       </span>
     </div>

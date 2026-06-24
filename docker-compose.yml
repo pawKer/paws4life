@@ -27,6 +27,7 @@ services:
     restart: unless-stopped
     volumes:
       - ${PAWS_DATA_PATH:-}:/data
+      - ${PAWS_DATA_PATH:-}/pet-images:/app/public/generated/pets
 
   sync:
     build: .
@@ -46,6 +47,7 @@ services:
     restart: unless-stopped
     volumes:
       - ${PAWS_DATA_PATH:-}:/data
+      - ${PAWS_DATA_PATH:-}/pet-images:/app/public/generated/pets
 
   # One-shot AI profile regeneration against the current SQLite DB.
   # Run explicitly with:

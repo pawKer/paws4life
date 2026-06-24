@@ -276,6 +276,7 @@ describe("pet profile generator", () => {
         profileBio: "Maya stie sa transforme fiecare zi intr-o plimbare cu zambet.",
         profileGeneratedAt: now(),
         profileModel: "gpt-5-mini",
+        shareImagesGeneratedAt: null,
       },
     });
   });

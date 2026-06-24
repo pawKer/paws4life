@@ -327,6 +327,46 @@ describe("shelter sync", () => {
     expect(summary.status).toBe("partial");
     expect(summary.errors).toContain("share images: 1022: browser failed");
   });
+
+  it("reports crashed share image generation as a partial sync", async () => {
+    const db = createSyncDb();
+    const generateShareImages = vi.fn(async () => {
+      throw new Error("Chromium is not installed");
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string | URL | Request) => {
+        const response = collapseResponses.get(String(url));
+
+        if (!response) {
+          return new Response("missing", { status: 404 });
+        }
+
+        return new Response(response, { status: 200 });
+      }),
+    );
+
+    const { syncShelterPets } = await import("@/lib/shelter/sync");
+    const summary = await syncShelterPets({
+      db,
+      requestDelayMs: 0,
+      generateShareImages,
+      shelterConfigs: [
+        {
+          slug: "first-shelter",
+          name: "First Shelter",
+          sitemapIndexUrl: "https://first.example/sitemap_index.xml",
+          isActive: true,
+          isDefault: true,
+        },
+      ],
+    });
+
+    expect(summary.status).toBe("partial");
+    expect(summary.errors).toContain(
+      "share images: Share image generation crashed: Chromium is not installed",
+    );
+  });
 });
 
 function createSyncDb({

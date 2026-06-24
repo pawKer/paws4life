@@ -104,10 +104,22 @@ export async function syncShelterPets(options: SyncOptions = {}): Promise<SyncSu
     return summary;
   }
 
-  const shareImages = await (options.generateShareImages ?? generateShareImagesForAvailablePets)({
-    db,
-    now
-  });
+  let shareImages: ShareImageGenerationSummary;
+
+  try {
+    shareImages = await (options.generateShareImages ?? generateShareImagesForAvailablePets)({
+      db,
+      now
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    shareImages = {
+      generatedCount: 0,
+      skippedCount: 0,
+      deletedCount: 0,
+      errors: [`Share image generation crashed: ${message}`]
+    };
+  }
 
   return withShareImageSummary(summary, shareImages);
 }
