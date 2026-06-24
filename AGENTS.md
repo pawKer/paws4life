@@ -19,7 +19,7 @@ Paws for Life is a private shelter-dog adoption MVP. It scrapes sitemap listings
 - `src/content/ro.ts`: user-facing Romanian copy.
 - `src/lib/shelters/config.ts`: shelter env config and default shelter lookup.
 - `src/lib/shelter/*`: parser, sync, and availability reconciliation.
-- `src/lib/pets/*`: repository, filters, sorting, profile generation.
+- `src/lib/pets/*`: repository, filters, sorting, profile generation, and share image generation.
 - `prisma/schema.prisma` and `prisma/migrations/*`: data model and migrations.
 
 ## Commands
@@ -28,6 +28,7 @@ Paws for Life is a private shelter-dog adoption MVP. It scrapes sitemap listings
 - Prepare DB: `npm run db:migrate`
 - Ensure fallback DB schema: `npm run db:ensure`
 - Scrape once: `npm run sync`
+- Generate static share images: `npm run share-images:generate`
 - Regenerate AI profiles: `npm run profiles:regenerate`
 - Dev server: `npm run dev`
 - Build: `npm run build`
@@ -39,7 +40,8 @@ Paws for Life is a private shelter-dog adoption MVP. It scrapes sitemap listings
 - Keep edits small and aligned with existing patterns.
 - Update copy in `src/content/ro.ts` instead of hardcoding UI text.
 - Frontend is default-shelter-only for now; do not expose shelter fields in `/api/pets`.
-- `npm run sync` should process all active shelters and reconcile availability per shelter.
+- `npm run sync` should process all active shelters, reconcile availability per shelter, and generate missing share images unless `SHARE_IMAGES_ON_SYNC=false`.
+- Generated share PNGs live in `public/generated/pets`, are ignored by Git, and should use deterministic pet-id storage names.
 - Add or update tests for behavior changes.
 - Use `rg`, excluding heavy folders when needed: `rg "term" -g "!node_modules" -g "!.next"`.
 - Do not revert unrelated user changes.

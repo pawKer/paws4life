@@ -45,6 +45,16 @@ npm run profiles:regenerate
 
 Set `SHELTER_SLUG` to regenerate one active shelter only. Set `PROFILE_REGENERATE_NAMES=keep` to refresh bios while preserving existing names; the default `replace` mode regenerates both names and bios.
 
+## Share Images
+
+Sync generates static pet profile and story PNGs for available pets by default. Files are written to `public/generated/pets` with deterministic pet-id based names, while downloaded/shared filenames use the registry number.
+
+```bash
+npm run share-images:generate
+```
+
+Set `SHARE_IMAGES_ON_SYNC=false` to skip image generation during sync. Use `SHARE_IMAGE_FORCE=true` to regenerate available pets, `SHARE_IMAGE_LIMIT` for smoke runs, `SHARE_IMAGE_PET_ID` for one pet, and `SHARE_IMAGE_BASE_URL` to point the generator at an already-running app.
+
 ## Docker
 
 ```bash
