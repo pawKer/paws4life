@@ -54,7 +54,7 @@ npx playwright install chromium
 npm run share-images:generate
 ```
 
-The Docker image installs Chromium during build, so this manual Playwright install is only needed for local generation.
+The Docker image installs Chromium and the Inter font during build, so this manual Playwright install is only needed for local generation.
 
 Set `SHARE_IMAGES_ON_SYNC=false` to skip image generation during sync. Use `SHARE_IMAGE_FORCE=true` to regenerate available pets, `SHARE_IMAGE_LIMIT` for smoke runs, `SHARE_IMAGE_PET_ID` for one pet, and `SHARE_IMAGE_BASE_URL` to point the generator at an already-running app.
 
