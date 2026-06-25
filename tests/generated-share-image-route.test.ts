@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { getGeneratedPetImageResponse } from "@/app/generated/pets/[filename]/route";
+import { getGeneratedPetImageResponse } from "@/lib/pets/generated-share-image-response";
 
 describe("generated pet image route", () => {
   it("serves generated PNGs from the runtime image directory", async () => {
