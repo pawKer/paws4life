@@ -71,7 +71,7 @@ export function PetShareImageCard({
         <div
           className={cn(
             "absolute left-16 text-white",
-            isStory ? "bottom-[165px]" : "bottom-[150px]",
+            isStory ? "bottom-[105px]" : "bottom-[150px]",
           )}
         >
           <h1
