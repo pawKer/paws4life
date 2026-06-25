@@ -11,6 +11,8 @@ RUN apt-get update \
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 RUN npm ci
+RUN npx playwright install --with-deps chromium \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY . .
 RUN npm run build
